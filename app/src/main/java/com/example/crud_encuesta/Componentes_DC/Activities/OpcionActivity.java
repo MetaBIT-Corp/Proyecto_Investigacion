@@ -7,6 +7,8 @@ import android.support.annotation.DrawableRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.crud_encuesta.Componentes_DC.Adaptadores.AdaptadorOpcion;
+import com.example.crud_encuesta.Componentes_DC.Adaptadores.AdaptadorOpcionRecyclerView;
 import com.example.crud_encuesta.Componentes_DC.Dao.DaoOpcion;
 import com.example.crud_encuesta.Componentes_DC.Objetos.Opcion;
 import com.example.crud_encuesta.R;
@@ -27,9 +30,12 @@ public class OpcionActivity extends AppCompatActivity {
 
     private DaoOpcion dao;
     private AdaptadorOpcion adaptador;
+    private AdaptadorOpcionRecyclerView adaptadorRV;
     private ArrayList<Opcion> lista_opciones;
     private Opcion opcion;
     private int id_tipo_item;
+
+    private RecyclerView recyclerView;
 
     private int id_pregunta;
     @SuppressLint("RestrictedApi")
@@ -39,12 +45,12 @@ public class OpcionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_opcion);
 
         FloatingActionButton agregar = (FloatingActionButton)findViewById(R.id.btn_nuevo);
+        agregar.setVisibility(View.VISIBLE);
         Button btn_change = (Button)findViewById(R.id.btn_change);
         Intent i = getIntent();
         Bundle b = i.getExtras();
         id_pregunta = b.getInt("id_pregunta");
         id_tipo_item = b.getInt("id_tipo_item");
-
         int es_verdadero_falso=0;
         int es_respuesta_corta=0;
         if(id_tipo_item==2){
@@ -62,15 +68,20 @@ public class OpcionActivity extends AppCompatActivity {
         if (lista_opciones.size()==1){
             agregar.setVisibility(View.GONE);
         }
-        adaptador = new AdaptadorOpcion(lista_opciones,this,dao, es_verdadero_falso,es_respuesta_corta, id_tipo_item);
+        /*adaptador = new AdaptadorOpcion(lista_opciones,this,dao, es_verdadero_falso,es_respuesta_corta, id_tipo_item);
         ListView list = (ListView)findViewById(R.id.lista);
-        list.setAdapter(adaptador);
+        list.setAdapter(adaptador);*/
+
+        adaptadorRV = new AdaptadorOpcionRecyclerView(lista_opciones,this,dao, es_verdadero_falso,es_respuesta_corta, id_tipo_item);
+        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adaptadorRV);
 
         btn_change.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dao.cambiar();
-                adaptador.notifyDataSetChanged();
+                adaptadorRV.notifyDataSetChanged();
                 lista_opciones = dao.verTodos();
             }
         });
@@ -115,7 +126,7 @@ public class OpcionActivity extends AppCompatActivity {
                                 opcion = new Opcion(id_pregunta, texto_opcion.getText().toString(), check);
 
                                 dao.insertar(opcion);
-                                adaptador.notifyDataSetChanged();
+                                adaptadorRV.notifyDataSetChanged();
                                 lista_opciones = dao.verTodos();
                                 dialog.dismiss();
 

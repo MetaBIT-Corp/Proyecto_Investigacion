@@ -111,8 +111,6 @@ public class AdaptadorPreguntaRecyclerView extends RecyclerView.Adapter<Adaptado
                     dialog.setContentView(R.layout.dialogo_pregunta);
                     dialog.show();
 
-                    Toast.makeText(v.getContext(), "AQUI LLEGA", Toast.LENGTH_SHORT).show();
-
                     final EditText texto_pregunta = (EditText)dialog.findViewById(R.id.editt_pregunta);
                     Button agregar = (Button)dialog.findViewById(R.id.btn_agregar);
                     Button cancelar = (Button)dialog.findViewById(R.id.btn_cancelar);
