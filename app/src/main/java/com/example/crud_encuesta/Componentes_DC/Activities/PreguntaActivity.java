@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.crud_encuesta.Componentes_DC.Adaptadores.AdaptadorPregunta;
+import com.example.crud_encuesta.Componentes_DC.Adaptadores.AdaptadorPreguntaRecyclerView;
 import com.example.crud_encuesta.Componentes_DC.Dao.DaoPregunta;
 import com.example.crud_encuesta.Componentes_DC.Objetos.Pregunta;
 import com.example.crud_encuesta.Componentes_MT.Area.Area;
@@ -27,8 +30,11 @@ public class PreguntaActivity extends AppCompatActivity {
 
     private DaoPregunta dao;
     private AdaptadorPregunta adaptador;
+    private AdaptadorPreguntaRecyclerView adaptadorRV;
     private ArrayList<Pregunta> lista_preguntas;
     private Pregunta pregunta;
+
+    private RecyclerView recyclerView;
 
     private int id_gpo_emp=0;
     private String desc_gpo_emp;
@@ -52,10 +58,16 @@ public class PreguntaActivity extends AppCompatActivity {
         dao = new DaoPregunta(this, id_gpo_emp, id_area, id_tipo_item);
 
         lista_preguntas = dao.verTodos();
-        adaptador = new AdaptadorPregunta(lista_preguntas,this,dao, id_tipo_item);
-        ListView list = (ListView)findViewById(R.id.lista);
+        //adaptador = new AdaptadorPregunta(lista_preguntas,this,dao, id_tipo_item);
+        adaptadorRV = new AdaptadorPreguntaRecyclerView(lista_preguntas,this,dao, id_tipo_item);
+        /*ListView list = (ListView)findViewById(R.id.lista);
+        list.setAdapter(adaptador);*/
+        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adaptadorRV);
+
         FloatingActionButton agregar = findViewById(R.id.btn_nuevo);
-        list.setAdapter(adaptador);
+
         btn_buscar = (ImageView)findViewById(R.id.btn_buscar);
         btn_todo = (ImageView)findViewById(R.id.btn_todo);
         texto_busqueda = (EditText)findViewById(R.id.texto_busqueda);
@@ -98,7 +110,7 @@ public class PreguntaActivity extends AppCompatActivity {
 
                                 pregunta = new Pregunta(id_gpo_emp, texto_pregunta.getText().toString());
                                 dao.insertar(pregunta);
-                                adaptador.notifyDataSetChanged();
+                                adaptadorRV.notifyDataSetChanged();
                                 lista_preguntas = dao.verTodos();
                                 dialog.dismiss();
 
