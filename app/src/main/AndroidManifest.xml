@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Estadisticas.EstadisticaActivity"></activity>
+        <activity android:name=".Componentes_DC.Activities.BottomNavActivity"></activity>
+        <activity android:name=".Estadisticas.EstadisticaActivity" />
         <activity android:name=".SubMenuEncuestaActivity" />
         <activity
             android:name=".Componentes_EL.Materia.MateriaUsersActivity"
