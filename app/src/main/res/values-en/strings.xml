@@ -275,7 +275,8 @@
     <string name="cargoa_v">Actual Charge</string>
     <string name="cargos_v">Secondary Charge</string>
     <!-- END Validaciones -->
-
+    <string name="estadistica">No Data.</string>
+    <string name="txesta">Statistics</string>
 
 
 </resources>

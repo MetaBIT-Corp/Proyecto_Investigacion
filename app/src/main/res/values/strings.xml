@@ -278,4 +278,7 @@
     <string name="clavearea">ClaveArea</string>
     <!-- END Validaciones -->
 
+    <string name="estadistica">No hay Datos.</string>
+    <string name="txesta">Estadisticas</string>
+
 </resources>

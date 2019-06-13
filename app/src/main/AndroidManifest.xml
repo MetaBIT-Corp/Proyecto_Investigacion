@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SubMenuEncuestaActivity"></activity>
+        <activity android:name=".Estadisticas.EstadisticaActivity"></activity>
+        <activity android:name=".SubMenuEncuestaActivity" />
         <activity
             android:name=".Componentes_EL.Materia.MateriaUsersActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -20,7 +21,7 @@
         <activity android:name=".Componentes_MT.Intento.IntentoActivity" />
         <activity
             android:name=".Componentes_MT.ClaveArea.VerAreasActivity"
-            android:label="ClaveArea"/>
+            android:label="ClaveArea" />
         <activity
             android:name=".Componentes_EL.Encuesta.EncuestaActivity"
             android:label="@string/title_activity_encuesta"
@@ -31,7 +32,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Componentes_MT.Clave.ClaveActivity"
-            android:label="@string/mt_clave"/>
+            android:label="@string/mt_clave" />
         <activity android:name=".Componentes_AP.Activities.TurnoActivity" />
         <activity android:name=".Componentes_AP.Activities.EvaluacionActivity" />
         <activity android:name=".Componentes_AP.Activities.LoginActivity">
@@ -54,11 +55,11 @@
         <activity android:name=".Componentes_MR.MateriaCiclo.ActivityMateriaCiclo" />
         <activity
             android:name=".Componentes_MT.Area.AreaActivity"
-            android:label="@string/mt_area"/>
+            android:label="@string/mt_area" />
         <activity android:name=".Componentes_DC.Activities.OpcionActivity" />
         <activity android:name=".Componentes_DC.Activities.PreguntaActivity" />
         <activity android:name=".Componentes_DC.Activities.GpoEmpActivity" />
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>
