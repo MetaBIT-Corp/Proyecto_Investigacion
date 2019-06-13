@@ -95,4 +95,60 @@ public class Consultas {
         db.close();
         return 2019;
     }
+
+    public static int cantidadInscritos(int idMat, Context context){
+        helper= DatabaseAccess.getInstance(context);
+        db=helper.open();
+        Cursor c=db.rawQuery(
+                "select count(*) as Inscritos from(SELECT ESTUDIANTE.IDUSUARIO,\n" +
+                        "MATERIA_CICLO.ID_CAT_MAT,\n" +
+                        "CAT_MAT_MATERIA.NOMBRE_MAR,\n" +
+                        "CAT_MAT_MATERIA.ES_ELECTIVA\n" +
+                        "FROM ESTUDIANTE\n" +
+                        "INNER JOIN DETALLEINSCEST ON\n" +
+                        "ESTUDIANTE.ID_EST=DETALLEINSCEST.ID_EST\n" +
+                        "INNER JOIN CARGA_ACADEMICA ON\n" +
+                        "DETALLEINSCEST.ID_CARG_ACA=CARGA_ACADEMICA.ID_CARG_ACA\n" +
+                        "INNER JOIN MATERIA_CICLO ON\n" +
+                        "MATERIA_CICLO.ID_MAT_CI=CARGA_ACADEMICA.ID_MAT_CI\n" +
+                        "INNER JOIN CAT_MAT_MATERIA ON\n" +
+                        "CAT_MAT_MATERIA.ID_CAT_MAT=MATERIA_CICLO.ID_CAT_MAT\n" +
+                        "where CAT_MAT_MATERIA.ID_CAT_MAT="+idMat+")",
+                null
+        );
+
+        if (c.getCount()!=0){
+            db.close();
+            c.moveToFirst();
+            int val=c.getInt(0);
+            return val;
+        }
+        db.close();
+        return 2019;
+    }
+
+    public static int mayorNota(String nomEva,Context context){
+        helper= DatabaseAccess.getInstance(context);
+        db=helper.open();
+        Cursor c=db.rawQuery(
+                "select max(intento.nota_intento) as Mayor\n" +
+                        "from cat_mat_materia inner join materia_ciclo on cat_mat_materia.ID_CAT_MAT=materia_ciclo.ID_CAT_MAT\n" +
+                        "inner join carga_academica on carga_academica.ID_MAT_CI=materia_ciclo.ID_MAT_CI\n" +
+                        "inner join evaluacion on evaluacion.ID_CARG_ACA=carga_academica.ID_CARG_ACA\n" +
+                        "inner join turno on turno.ID_EVALUACION=evaluacion.ID_EVALUACION\n" +
+                        "inner join clave on clave.ID_TURNO=turno.ID_TURNO\n" +
+                        "inner join intento on intento.ID_CLAVE=clave.ID_CLAVE\n" +
+                        "where evaluacion.NOMBRE_EVALUACION='"+nomEva+"'",
+                null
+        );
+
+        if (c.getCount()!=0){
+            db.close();
+            c.moveToFirst();
+            int val=c.getInt(0);
+            return val;
+        }
+        db.close();
+        return 2019;
+    }
 }

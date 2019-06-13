@@ -280,5 +280,6 @@
 
     <string name="estadistica">No hay Datos.</string>
     <string name="txesta">Estadisticas</string>
+    <string name="txesta_eva">Estadisticas de Evaluaciones</string>
 
 </resources>

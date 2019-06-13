@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 
 public class EstadisticaActivity extends AppCompatActivity {
     BarChart grafico;
+    ListView info;
     int idMat;
 
     @Override
@@ -34,6 +37,9 @@ public class EstadisticaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_estadistica);
         TextView tx=findViewById(R.id.txEstadistica);
+        TextView tx1=findViewById(R.id.txEstadistica2);
+        info=findViewById(R.id.listEstadistic);
+
 
         grafico = findViewById(R.id.barras);
         idMat=getIntent().getExtras().getInt("id_materia");
@@ -122,10 +128,29 @@ public class EstadisticaActivity extends AppCompatActivity {
             grafico.animateXY(2000, 2000);
             grafico.invalidate();
 
+            ArrayList<String> listainfor=new ArrayList<>();
+            for (int i=0;i<nomEvaluaciones.length;i++){
+                InformacionEstadistica info=new InformacionEstadistica(
+                        nomEvaluaciones[i],
+                        Math.round(cantidad[0][i]+cantidad[1][i])+"",
+                        Math.round(cantidad[1][i])+"",
+
+                        Math.round(cantidad[0][i])+"",
+                        Math.round(Consultas.cantidadInscritos(idMat,EstadisticaActivity.this))+"",
+                        Consultas.mayorNota(nomEvaluaciones[i],EstadisticaActivity.this)+""
+                );
+                listainfor.add(info.toString());
+            }
+
+
+            ArrayAdapter adapter=new ArrayAdapter(EstadisticaActivity.this,android.R.layout.simple_list_item_1,listainfor);
+            info.setAdapter(adapter);
+
 
         }else {
             grafico.setVisibility(View.GONE);
             tx.setText(R.string.estadistica);
+            tx1.setVisibility(View.GONE);
         }
 
 

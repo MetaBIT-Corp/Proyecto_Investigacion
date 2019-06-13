@@ -1,25 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:orientation="vertical">
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/barras"
-        android:layout_width="289dp"
-        android:layout_height="271dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.51"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.366">
-
-    </com.github.mikephil.charting.charts.BarChart>
 
     <TextView
         android:id="@+id/txEstadistica"
@@ -31,20 +15,41 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        android:textAppearance="@style/Theme.AppCompat.DayNight"
-        android:textSize="30dp"
         android:text="@string/txesta"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.186"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.019" />;
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.034" />
+        android:textAppearance="@style/Theme.AppCompat.DayNight"
+        android:textSize="30dp" />
 
-</android.support.constraint.ConstraintLayout>
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/barras"
+        android:layout_width="289dp"
+        android:layout_height="271dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+
+    </com.github.mikephil.charting.charts.BarChart>
+
+    <TextView
+        android:id="@+id/txEstadistica2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="80dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/txesta_eva"
+        android:textAppearance="@style/Theme.AppCompat.DayNight"
+        android:textSize="15dp" />
+
+    <ListView
+        android:id="@+id/listEstadistic"
+        android:layout_width="322dp"
+        android:layout_height="98dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="8dp" />
+</LinearLayout>
