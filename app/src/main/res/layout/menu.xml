@@ -47,13 +47,23 @@
                 android:src="@drawable/db_x"/>
 
             -->
+            <ImageView
+                android:id="@+id/bottomNav"
+                android:layout_width="40dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right"
+                android:src="@drawable/baseline_more_horiz_black_18dp"/>
+
+            <android.support.v4.widget.Space
+                android:layout_width="15dp"
+                android:layout_height="0dp" />
 
             <ImageView
                 android:id="@+id/log"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
                 android:layout_gravity="right"
-                android:src="@drawable/loggin"/>
+                app:srcCompat="@drawable/loggin"/>
 
         </LinearLayout>
 

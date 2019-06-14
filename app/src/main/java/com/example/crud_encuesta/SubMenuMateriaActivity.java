@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.crud_encuesta.Componentes_AP.Activities.EvaluacionActivity;
 import com.example.crud_encuesta.Componentes_AP.Models.Evaluacion;
 import com.example.crud_encuesta.Componentes_MT.Area.AreaActivity;
+import com.example.crud_encuesta.Estadisticas.EstadisticaActivity;
 
 public class SubMenuMateriaActivity extends AppCompatActivity {
 
@@ -25,9 +26,11 @@ public class SubMenuMateriaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sub_menu_materia);
 
         CardView cardView=findViewById(R.id.cardArea);
+        CardView cardView1=findViewById(R.id.cardEstadistica);
 
         ImageView btnArea=findViewById(R.id.btnArea);
         ImageView btnEva=findViewById(R.id.btnEva);
+        ImageView btnEsta=findViewById(R.id.btnEsta);
         TextView tx=findViewById(R.id.el_lbl_Mat);
 
         //Recuperacion de valores
@@ -40,6 +43,7 @@ public class SubMenuMateriaActivity extends AppCompatActivity {
 
         if (rol==2){
             cardView.setVisibility(View.GONE);
+            cardView1.setVisibility(View.GONE);
         }
 
         btnArea.setOnClickListener(new View.OnClickListener() {
@@ -60,5 +64,13 @@ public class SubMenuMateriaActivity extends AppCompatActivity {
             }
         });
 
+        btnEsta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(SubMenuMateriaActivity.this, EstadisticaActivity.class);
+                i.putExtra("id_materia",idMat);
+                startActivity(i);
+            }
+        });
     }
 }
