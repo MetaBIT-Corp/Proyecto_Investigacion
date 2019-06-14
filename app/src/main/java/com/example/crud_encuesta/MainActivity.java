@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent in = new Intent(MainActivity.this, BottomNavActivity.class);
                 in.putExtra("id_user", id);
                 in.putExtra("rol_user", rol);
+                in.putExtra("username",getIntent().getExtras().getString("username"));
                 startActivity(in);
             }
         });
