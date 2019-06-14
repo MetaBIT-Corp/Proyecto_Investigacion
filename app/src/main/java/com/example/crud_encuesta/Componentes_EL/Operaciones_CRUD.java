@@ -177,7 +177,9 @@ public class Operaciones_CRUD {
 
     public static ArrayList<Materia> todosMateria(SQLiteDatabase db,String parametro) {
         ArrayList<Materia> lista = new ArrayList<>();
-        Cursor cu = db.rawQuery("SELECT *FROM "+EstructuraTablas.MATERIA_TABLA_NAME+" WHERE "+EstructuraTablas.COL_4_MATERIA+" LIKE '%"+parametro+"%'",null);
+        Cursor cu = db.rawQuery("SELECT *FROM "+EstructuraTablas.MATERIA_TABLA_NAME+
+                " WHERE "+EstructuraTablas.COL_4_MATERIA+" " +
+                "LIKE '%"+parametro+"%'",null);
 
         if (cu.moveToFirst()) {
             Materia m;

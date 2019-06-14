@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.crud_encuesta.Componentes_AP.Librerias.SpeechTextToSpeech;
 import com.example.crud_encuesta.Componentes_DC.Activities.GpoEmpActivity;
 import com.example.crud_encuesta.Componentes_DC.Activities.PreguntaActivity;
 import com.example.crud_encuesta.Componentes_EL.Carrera.Carrera;
@@ -44,6 +45,8 @@ public class MateriaActivity extends AppCompatActivity {
     ArrayList<String> listPensumSpinner = new ArrayList<>();
     ArrayList<String> listCarreraSpinner = new ArrayList<>();
     ArrayList<Materia> listaMateria = new ArrayList<>();
+    //Speech
+    SpeechTextToSpeech speech;
 
     int id_carrera;
     int id_pensum;
@@ -55,6 +58,12 @@ public class MateriaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_materia);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        speech = new SpeechTextToSpeech(this,this);
+
+        speech.inicializarTexttoSpeech();
+        speech.inicializarSpeech();
+
 
         rol=getIntent().getExtras().getInt("rol_user");
 
@@ -96,6 +105,22 @@ public class MateriaActivity extends AppCompatActivity {
 
         /*listPensumSpinner = obtenerListaPensum();
         listCarreraSpinner = obtenerListaCarrera();*/
+
+        /*
+        SPEECH
+         */
+        FloatingActionButton fab_speech = findViewById(R.id.fab_speech);
+
+        fab_speech.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speech.reconocimiento();
+            }
+        });
+
+        /*
+        FINAL SPEECH
+         */
 
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -207,6 +232,19 @@ public class MateriaActivity extends AppCompatActivity {
     public void onBackPressed(){
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        speech.ttsShutdown();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        speech.inicializarTexttoSpeech();
+        speech.inicializarSpeech();
     }
 
 }
