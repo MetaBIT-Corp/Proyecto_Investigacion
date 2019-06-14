@@ -1,15 +1,25 @@
 package com.example.crud_encuesta.Componentes_EL.Encuesta;
 
+import com.example.crud_encuesta.Componentes_EL.Materia.MateriaActivity;
 import com.example.crud_encuesta.Componentes_MR.Docente.Docente;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,12 +39,24 @@ import com.example.crud_encuesta.Componentes_EL.EstructuraTablas;
 import com.example.crud_encuesta.Componentes_EL.Operaciones_CRUD;
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 public class EncuestaActivity extends AppCompatActivity {
+    /*
+    Speech
+     */
+    private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+    TextToSpeech textToSpeech;
+    SpeechRecognizer speechRecognizer;
+    /*
+    FIN Speech
+     */
 
     SQLiteDatabase db;
     DatabaseAccess access;
@@ -63,7 +85,6 @@ public class EncuestaActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab= findViewById(R.id.fab);
         listView=findViewById(R.id.list_view_base);
         access=DatabaseAccess.getInstance(EncuestaActivity.this);
         db=access.open();
@@ -76,8 +97,22 @@ public class EncuestaActivity extends AppCompatActivity {
 
         LinearLayout l=findViewById(R.id.linearBusqueda);
 
+/*
+        SPEECH
+         */
+        com.getbase.floatingactionbutton.FloatingActionButton fab_speech = findViewById(R.id.fab_speech);
+        fab_speech.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reconocimiento();
+            }
+        });
 
+        /*
+        FINAL SPEECH
+         */
 
+        FloatingActionButton fab= findViewById(R.id.fab);
         if (rol==0||rol==2){
             listaEncuesta=Operaciones_CRUD.todosEncuesta(db,listaDocentes);
             fab.setVisibility(View.GONE);
@@ -123,6 +158,7 @@ public class EncuestaActivity extends AppCompatActivity {
         adapter=new EncuestaAdapter(EncuestaActivity.this,listaEncuesta,db,this,listaDocentes,iduser,rol);
 
         listView.setAdapter(adapter);
+
 
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -267,5 +303,173 @@ public class EncuestaActivity extends AppCompatActivity {
                 autocomplemento);
         buscar.setAdapter(adapterComplemento);
     }
+
+    /*
+    SPEECH
+     */
+
+    public void inicializarTexttoSpeech() {
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (textToSpeech.getEngines().size() == 0) {
+                    Toast.makeText(EncuestaActivity.this,
+                            "No posees la instalación necesaria",
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    Locale locSpanish = new Locale("spa", "US");
+                    textToSpeech.setLanguage(locSpanish);
+                    speak("Iniciando");
+                }
+            }
+        });
+    }
+
+    public void speak(String s) {
+        if (Build.VERSION.SDK_INT >= 21) {
+            textToSpeech.speak(
+                    s,
+                    TextToSpeech.QUEUE_FLUSH,
+                    null,
+                    null
+            );
+        } else {
+            textToSpeech.speak(
+                    s,
+                    TextToSpeech.QUEUE_FLUSH,
+                    null
+            );
+        }
+    }
+    public void ttsShutdown() {
+        textToSpeech.shutdown();
+    }
+
+    public void inicializarSpeech() {
+
+        if (SpeechRecognizer.isRecognitionAvailable(this)) {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+            speechRecognizer.setRecognitionListener(new RecognitionListener() {
+                @Override
+                public void onReadyForSpeech(Bundle params) {
+
+                }
+
+                @Override
+                public void onBeginningOfSpeech() {
+
+                }
+
+                @Override
+                public void onRmsChanged(float rmsdB) {
+
+                }
+
+                @Override
+                public void onBufferReceived(byte[] buffer) {
+
+                }
+
+                @Override
+                public void onEndOfSpeech() {
+
+                }
+
+                @Override
+                public void onError(int error) {
+
+                }
+
+                @Override
+                public void onResults(Bundle results) {
+                    List<String> resultado = results.getStringArrayList(
+                            SpeechRecognizer.RESULTS_RECOGNITION
+                    );
+
+                    processResult(resultado.get(0));
+                }
+
+                @Override
+                public void onPartialResults(Bundle partialResults) {
+
+                }
+
+                @Override
+                public void onEvent(int eventType, Bundle params) {
+
+                }
+            });
+        }
+    }
+
+    public void processResult(String command) {
+        command = command.toLowerCase();
+        String where2 = "%' OR " +EstructuraTablas.COL_2_ENCUESTA+ " LIKE '%";
+        command = command+"%'";
+        String[] parametros = command.split(" ");
+        listaEncuesta=Operaciones_CRUD.todosEncuestaSpeech(db,listaDocentes,parametros);
+        adapter.setL(listaEncuesta);
+
+        if(listaEncuesta.size()==0){
+            speak("No se encontró ninguna coincidencia");
+            Toast.makeText(
+                    this,
+                    "No se encontró ninguna coincidencia"
+                    ,Toast.LENGTH_LONG).show();
+        }else {
+            speak("Cantidad de registros encontrados: " +listaEncuesta.size());
+            Toast.makeText(
+                    this,
+                    "Cantidad de registros encontrados: " +listaEncuesta.size()
+                    ,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void reconocimiento() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.RECORD_AUDIO)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(EncuestaActivity.this,
+                        new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+            speechRecognizer.startListening(intent);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ttsShutdown();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        inicializarTexttoSpeech();
+        inicializarSpeech();
+    }
+    /*
+    FIN SPEECH
+     */
 
 }

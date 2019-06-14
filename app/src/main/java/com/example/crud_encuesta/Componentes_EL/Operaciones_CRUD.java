@@ -221,6 +221,32 @@ public class Operaciones_CRUD {
         return lista;
     }
 
+    public static ArrayList<Encuesta> todosEncuestaSpeech(SQLiteDatabase db,ArrayList<Docente> d,String[] parametro) {
+        String where = " WHERE " +EstructuraTablas.COL_2_ENCUESTA+ " LIKE '%";
+        String where2 = "%' OR " +EstructuraTablas.COL_2_ENCUESTA+ " LIKE '%";
+        ArrayList<Encuesta> lista = new ArrayList<>();
+        Cursor c = db.rawQuery("SELECT * FROM "+EstructuraTablas.ENCUESTA_TABLA_NAME+
+                        where + TextUtils.join(where2, parametro),
+                null);
+
+        if (c.moveToFirst()) {
+            Encuesta e;
+            do {
+                e = new Encuesta();
+                e.setId(c.getInt(0));
+                for (int i = 0; i < d.size(); i++) {
+                    if (c.getInt(1) == d.get(i).getId()) e.setId_docente(d.get(i));
+                }
+                e.setTitulo(c.getString(2));
+                e.setDescripcion(c.getString(3));
+                e.setFecha_in(c.getString(4));
+                e.setFecha_fin(c.getString(5));
+                lista.add(e);
+            } while (c.moveToNext());
+        }
+        return lista;
+    }
+
     public static ArrayList<Materia> todosMateria(SQLiteDatabase db,int rol, int id) {
         ArrayList<Materia> lista = new ArrayList<>();
         Cursor cu = null;
