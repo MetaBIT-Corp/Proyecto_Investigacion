@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -26,6 +27,7 @@ import com.example.crud_encuesta.Componentes_MR.Funciones;
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class ActivityDocente extends AppCompatActivity {
 
@@ -40,6 +42,8 @@ public class ActivityDocente extends AppCompatActivity {
     private ArrayList<Escuela> escuelas = new ArrayList<>();
     private ArrayList<String> listaEscuelas = new ArrayList<>();
     private int id_escuela;
+
+    AutoCompleteTextView buscar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -61,7 +65,7 @@ public class ActivityDocente extends AppCompatActivity {
         FloatingActionButton agregar = (FloatingActionButton) findViewById(R.id.btn_nuevo_docente);
         ImageView btnBuscar=findViewById(R.id.el_find);
         ImageView btnTodos=findViewById(R.id.el_all);
-        final EditText buscar=findViewById(R.id.find_nom);
+        //final EditText buscar=findViewById(R.id.find_nom);
 
         /*Llenando Lista de Docentes en DB*/
         if((lista != null) && (lista.size() > 0)){
@@ -72,6 +76,8 @@ public class ActivityDocente extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
         });
+
+        autoComplemento();
 
         /*Botón de Busqueda*/
         btnBuscar.setOnClickListener(new View.OnClickListener() {
@@ -212,6 +218,7 @@ public class ActivityDocente extends AppCompatActivity {
 
                             adapter.notifyDataSetChanged();
                             lista = dao.verTodos();
+                            autoComplemento();
                             dialogo.dismiss();
                         }else {
                             Toast.makeText(getApplicationContext(), errores+"\n"+getResources().getString(R.string.rellene_v), Toast.LENGTH_SHORT).show();
@@ -228,5 +235,18 @@ public class ActivityDocente extends AppCompatActivity {
                 });
             }
         });
+    }
+    public void autoComplemento(){
+        Vector<String> autocomplemento = new Vector<String>();
+        for(int i =0;i<=lista.size()-1;i++){
+            autocomplemento.add(lista.get(i).getNombre());
+            autocomplemento.add(lista.get(i).getCarnet());
+        }
+        buscar = (AutoCompleteTextView) findViewById(R.id.auto);
+        ArrayAdapter<String> adapterComplemento = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_list_item_1,
+                autocomplemento);
+        buscar.setAdapter(adapterComplemento);
     }
 }

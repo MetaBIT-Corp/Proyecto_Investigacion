@@ -23,6 +23,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,6 +49,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 public class MateriaActivity extends AppCompatActivity {
 
@@ -72,6 +75,8 @@ public class MateriaActivity extends AppCompatActivity {
     ArrayList<String> listCarreraSpinner = new ArrayList<>();
     ArrayList<Materia> listaMateria = new ArrayList<>();
 
+    AutoCompleteTextView buscar;
+
 
     int id_carrera;
     int id_pensum;
@@ -89,8 +94,8 @@ public class MateriaActivity extends AppCompatActivity {
 
         ImageView btnBuscar=findViewById(R.id.el_find);
         ImageView btnTodos=findViewById(R.id.el_all);
-        final EditText buscar=findViewById(R.id.find_nom);
-        buscar.setHint(R.string.el_buscarMat);
+        //final EditText buscar=findViewById(R.id.find_nom);
+
 
         listView = findViewById(R.id.list_view_base);
         access = DatabaseAccess.getInstance(MateriaActivity.this);
@@ -106,6 +111,14 @@ public class MateriaActivity extends AppCompatActivity {
         adapter = new MateriaAdapter(MateriaActivity.this, listaMateria, db, this, listaPensum, listaCarreras,listaEscuelas,rol);
 
         listView.setAdapter(adapter);
+
+        /*
+        Autocomplemento
+         */
+        autoComplemento();
+        /*
+        FIN AUTOCOMPLEMENTO
+         */
 
 
         btnBuscar.setOnClickListener(new View.OnClickListener() {
@@ -212,6 +225,7 @@ public class MateriaActivity extends AppCompatActivity {
                             Operaciones_CRUD.insertar(db, contentValues, MateriaActivity.this, EstructuraTablas.MATERIA_TABLA_NAME).show();
                             listaMateria = Operaciones_CRUD.todosMateria(db);
                             adapter.setL(listaMateria);
+                            autoComplemento();
                             //id_carrera = -1;
                             //id_pensum = -1;
                         }
@@ -370,10 +384,10 @@ public class MateriaActivity extends AppCompatActivity {
                     "No se encontró ninguna coincidencia"
                     ,Toast.LENGTH_LONG).show();
         }else {
-            speak("Se han encontrado " +listaMateria.size()+ "registros");
+            speak("Cantidad de registros encontrados: " +listaMateria.size());
             Toast.makeText(
                     this,
-                    "Se han encontrado " +listaMateria.size()+ "registros"
+                    "Cantidad de registros encontrados: " +listaMateria.size()
                     ,Toast.LENGTH_LONG).show();
         }
     }
@@ -423,6 +437,20 @@ public class MateriaActivity extends AppCompatActivity {
     /*
     FIN SPEECH
      */
+
+    public void autoComplemento(){
+        Vector<String> autocomplemento = new Vector<String>();
+        for(int i =0;i<=listaMateria.size()-1;i++){
+            autocomplemento.add(listaMateria.get(i).getNombre());
+        }
+        buscar = (AutoCompleteTextView) findViewById(R.id.auto);
+        ArrayAdapter<String> adapterComplemento = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_list_item_1,
+                autocomplemento);
+        buscar.setAdapter(adapterComplemento);
+        buscar.setHint(R.string.el_buscarMat);
+    }
 
 
 }

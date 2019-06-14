@@ -14,6 +14,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -30,6 +32,7 @@ import com.example.crud_encuesta.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Vector;
 
 public class EncuestaActivity extends AppCompatActivity {
 
@@ -46,6 +49,8 @@ public class EncuestaActivity extends AppCompatActivity {
     ArrayList<Docente>listaDocentes=new ArrayList<>();
     ArrayList<Encuesta>listaEncuesta=new ArrayList<>();
     EncuestaAdapter adapter;
+
+    AutoCompleteTextView buscar;
 
     int rol;
     int iduser;
@@ -86,8 +91,8 @@ public class EncuestaActivity extends AppCompatActivity {
 
         ImageView btnBuscar=findViewById(R.id.el_find);
         ImageView btnTodos=findViewById(R.id.el_all);
-        final EditText buscar=findViewById(R.id.find_nom);
-
+        //final EditText buscar=findViewById(R.id.find_nom);
+        autoComplemento();
 
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,6 +238,7 @@ public class EncuestaActivity extends AppCompatActivity {
                                 listaEncuesta=Operaciones_CRUD.todosEncuesta(db,listaDocentes,iduser);
                             }
                             adapter.setL(listaEncuesta);
+                            autoComplemento();
                         }
                     }
                 });
@@ -247,6 +253,19 @@ public class EncuestaActivity extends AppCompatActivity {
                 d.show();
             }
         });
+    }
+
+    public void autoComplemento(){
+        Vector<String> autocomplemento = new Vector<String>();
+        for(int i =0;i<=listaEncuesta.size()-1;i++){
+            autocomplemento.add(listaEncuesta.get(i).getTitulo());
+        }
+        buscar = (AutoCompleteTextView) findViewById(R.id.auto);
+        ArrayAdapter<String> adapterComplemento = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_list_item_1,
+                autocomplemento);
+        buscar.setAdapter(adapterComplemento);
     }
 
 }

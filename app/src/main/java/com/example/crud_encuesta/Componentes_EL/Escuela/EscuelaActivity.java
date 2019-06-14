@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,6 +25,7 @@ import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class EscuelaActivity extends AppCompatActivity {
 
@@ -36,6 +38,8 @@ public class EscuelaActivity extends AppCompatActivity {
     ArrayList<Facultad> facultades= new ArrayList<>();
     ArrayList<String> listafacultades;
     int id_facu;
+
+    AutoCompleteTextView buscar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +61,9 @@ public class EscuelaActivity extends AppCompatActivity {
 
         ImageView btnBuscar=findViewById(R.id.el_find);
         ImageView btnTodos=findViewById(R.id.el_all);
-        final EditText buscar=findViewById(R.id.find_nom);
+        //final EditText buscar=findViewById(R.id.find_nom);
 
+        autoComplemento();
 
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +122,7 @@ public class EscuelaActivity extends AppCompatActivity {
                             db=access.openRead();
                             listaEscuela=Operaciones_CRUD.todosEscuela(EstructuraTablas.ESCUELA_TABLA_NAME,db);
                             adapter.setL(listaEscuela);
+                            autoComplemento();
                         }
                     }
                 });
@@ -140,5 +146,18 @@ public class EscuelaActivity extends AppCompatActivity {
             listaca.add(facultades.get(i).toString());
         }
         return listaca;
+    }
+
+    public void autoComplemento(){
+        Vector<String> autocomplemento = new Vector<String>();
+        for(int i =0;i<=listaEscuela.size()-1;i++){
+            autocomplemento.add(listaEscuela.get(i).getNombre());
+        }
+        buscar = (AutoCompleteTextView) findViewById(R.id.auto);
+        ArrayAdapter<String> adapterComplemento = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_list_item_1,
+                autocomplemento);
+        buscar.setAdapter(adapterComplemento);
     }
 }

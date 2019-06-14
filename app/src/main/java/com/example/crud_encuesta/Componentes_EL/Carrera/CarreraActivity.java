@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,6 +25,7 @@ import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class CarreraActivity extends AppCompatActivity {
     SQLiteDatabase db;
@@ -34,6 +36,8 @@ public class CarreraActivity extends AppCompatActivity {
     ArrayList<String> listSpinner=new ArrayList<>();
     ArrayList<Escuela> listaEscuelas= new ArrayList<>();
     CarreraAdapter adapter;
+
+    AutoCompleteTextView buscar;
 
     int id_escuela=0;
 
@@ -56,7 +60,9 @@ public class CarreraActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
         ImageView btnBuscar=findViewById(R.id.el_find);
         ImageView btnTodos=findViewById(R.id.el_all);
-        final EditText buscar=findViewById(R.id.find_nom);
+        //final EditText buscar=findViewById(R.id.find_nom);
+
+        autoComplemento();
 
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +122,7 @@ public class CarreraActivity extends AppCompatActivity {
                             listaCarreras=Operaciones_CRUD.todosCarrera(db,listaEscuelas);
                             adapter.setL(listaCarreras);
                             id_escuela=-1;
+                            autoComplemento();
                         }
                     }
                 });
@@ -141,6 +148,19 @@ public class CarreraActivity extends AppCompatActivity {
             listaEs.add(listaEscuelas.get(i).getNombre());
         }
         return listaEs;
+    }
+
+    public void autoComplemento(){
+        Vector<String> autocomplemento = new Vector<String>();
+        for(int i =0;i<=listaCarreras.size()-1;i++){
+            autocomplemento.add(listaCarreras.get(i).getNombre());
+        }
+        buscar = (AutoCompleteTextView) findViewById(R.id.auto);
+        ArrayAdapter<String> adapterComplemento = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_list_item_1,
+                autocomplemento);
+        buscar.setAdapter(adapterComplemento);
     }
 
 }

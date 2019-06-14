@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -22,6 +24,7 @@ import com.example.crud_encuesta.Componentes_MR.Funciones;
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class ActivityEstudiante extends AppCompatActivity {
 
@@ -32,6 +35,8 @@ public class ActivityEstudiante extends AppCompatActivity {
     private Usuario usuario;
     private SQLiteDatabase db;
     private DatabaseAccess access;
+
+    AutoCompleteTextView buscar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -46,7 +51,7 @@ public class ActivityEstudiante extends AppCompatActivity {
         db = access.open();
 
         final ListView list = (ListView) findViewById(R.id.lista_estudiante);
-        final EditText buscar=findViewById(R.id.find_nom);
+        //final EditText buscar=findViewById(R.id.find_nom);
 
         FloatingActionButton agregar = (FloatingActionButton) findViewById(R.id.btn_nuevo_estudiante);
         ImageView btnBuscar=findViewById(R.id.el_find);
@@ -61,6 +66,8 @@ public class ActivityEstudiante extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
         });
+
+        autoComplemento();
 
         /*Botón de Busqueda*/
         btnBuscar.setOnClickListener(new View.OnClickListener() {
@@ -170,6 +177,7 @@ public class ActivityEstudiante extends AppCompatActivity {
 
                             lista = dao.verTodos();
                             adapter.notifyDataSetChanged();
+                            autoComplemento();
                             dialogo.dismiss();
 
                         } else {
@@ -187,5 +195,18 @@ public class ActivityEstudiante extends AppCompatActivity {
                 });
             }
         });
+    }
+    public void autoComplemento(){
+        Vector<String> autocomplemento = new Vector<String>();
+        for(int i =0;i<=lista.size()-1;i++){
+            autocomplemento.add(lista.get(i).getNombre());
+            autocomplemento.add(lista.get(i).getCarnet());
+        }
+        buscar = (AutoCompleteTextView) findViewById(R.id.auto);
+        ArrayAdapter<String> adapterComplemento = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_list_item_1,
+                autocomplemento);
+        buscar.setAdapter(adapterComplemento);
     }
 }

@@ -47,7 +47,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:background="@color/icons">
-
+            <!--
             <EditText
                 android:id="@+id/ap_edt_buscar_evaluacion"
                 android:layout_width="wrap_content"
@@ -55,6 +55,16 @@
                 android:layout_weight="0.8"
                 android:hint="@string/ap_buscar_evaluacion"
                 android:textColor="@color/primary_text"/>
+                -->
+            <AutoCompleteTextView
+                android:id="@+id/auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/ap_buscar_evaluacion"
+                android:layout_weight="0.8"
+                android:completionThreshold="1"
+                android:popupBackground="@color/colorWhite"
+                android:completionHint="@string/edtx_buscar"/>
 
             <ImageView
                 android:id="@+id/ap_imgv_buscar_evaluacion"

@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -32,6 +34,7 @@ import com.example.crud_encuesta.Componentes_MT.Intento.IntentoActivity;
 import com.example.crud_encuesta.R;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class EvaluacionActivity extends AppCompatActivity {
 
@@ -44,6 +47,8 @@ public class EvaluacionActivity extends AppCompatActivity {
     int id_carga_academica =0;
     int id_estudiante =0;
     Usuario usuario;
+
+    AutoCompleteTextView edt_buscar;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -81,7 +86,7 @@ public class EvaluacionActivity extends AppCompatActivity {
         ImageView buscar = (ImageView) findViewById(R.id.ap_imgv_buscar_evaluacion);
         ImageView all = (ImageView) findViewById(R.id.ap_imgv_all_evaluacion);
         FloatingActionButton add = (FloatingActionButton) findViewById(R.id.ap_fab_agregar_evaluacion);
-        final EditText edt_buscar = (EditText) findViewById(R.id.ap_edt_buscar_evaluacion);
+        //final EditText edt_buscar = (EditText) findViewById(R.id.ap_edt_buscar_evaluacion);
 
         if(usuario.getROL()==0 || usuario.getROL()==2){
             add.setVisibility(View.INVISIBLE);
@@ -89,6 +94,7 @@ public class EvaluacionActivity extends AppCompatActivity {
 
         ListView listView = (ListView) findViewById(R.id.lista_evaluacion);
         listView.setAdapter(adapterEvaluacion);
+        autoComplemento();
 
         //acceso a evaluación
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -161,6 +167,8 @@ public class EvaluacionActivity extends AppCompatActivity {
                                 evaluaciones = daoEvaluacion.verTodos(id_carga_academica);
                                 //ejecutamos el metodo
                                 adapterEvaluacion.notifyDataSetChanged();
+                                //actualizamos autocompletado
+                                autoComplemento();
                                 //cerramos el dialogo
                                 dialog.dismiss();
 
@@ -218,5 +226,17 @@ public class EvaluacionActivity extends AppCompatActivity {
             }
         });
         //final de listener de all
+    }
+    public void autoComplemento(){
+        Vector<String> autocomplemento = new Vector<String>();
+        for(int i =0;i<=evaluaciones.size()-1;i++){
+            autocomplemento.add(evaluaciones.get(i).getNombre());
+        }
+        edt_buscar = (AutoCompleteTextView) findViewById(R.id.auto);
+        ArrayAdapter<String> adapterComplemento = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_list_item_1,
+                autocomplemento);
+        edt_buscar.setAdapter(adapterComplemento);
     }
 }

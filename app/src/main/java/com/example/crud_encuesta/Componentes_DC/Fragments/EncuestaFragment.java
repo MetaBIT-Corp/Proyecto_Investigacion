@@ -15,6 +15,8 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -35,12 +37,13 @@ import com.example.crud_encuesta.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class EncuestaFragment extends Fragment {
-
+    AutoCompleteTextView buscar;
 
     SQLiteDatabase db;
     DatabaseAccess access;
@@ -97,8 +100,7 @@ public class EncuestaFragment extends Fragment {
 
         ImageView btnBuscar=v.findViewById(R.id.el_find);
         ImageView btnTodos=v.findViewById(R.id.el_all);
-        final EditText buscar=v.findViewById(R.id.find_nom);
-
+        //final EditText buscar=v.findViewById(R.id.find_nom);
 
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +131,7 @@ public class EncuestaFragment extends Fragment {
         adapter=new EncuestaAdapter(getContext(),listaEncuesta,db,getActivity(),listaDocentes,iduser,rol);
 
         listView.setAdapter(adapter);
-
+        autoComplemento(v);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +139,7 @@ public class EncuestaFragment extends Fragment {
 
                 final AlertDialog.Builder d=new AlertDialog.Builder(getActivity());
 
-                View v=getLayoutInflater().inflate(R.layout.dialogo_encuesta, null);
+                final View v=getLayoutInflater().inflate(R.layout.dialogo_encuesta, null);
 
                 Button btnfi=v.findViewById(R.id.btn_fecha_inicio);
                 Button btnff=v.findViewById(R.id.btn_fecha_final);
@@ -244,6 +246,7 @@ public class EncuestaFragment extends Fragment {
                                 listaEncuesta=Operaciones_CRUD.todosEncuesta(db,listaDocentes,iduser);
                             }
                             adapter.setL(listaEncuesta);
+                            autoComplemento(v);
                         }
                     }
                 });
@@ -259,6 +262,19 @@ public class EncuestaFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    public void autoComplemento(View v){
+        Vector<String> autocomplemento = new Vector<String>();
+        for(int i =0;i<=listaEncuesta.size()-1;i++){
+            autocomplemento.add(listaEncuesta.get(i).getTitulo());
+        }
+        buscar = (AutoCompleteTextView) v.findViewById(R.id.auto);
+        ArrayAdapter<String> adapterComplemento = new ArrayAdapter<String>(
+                v.getContext(),
+                android.R.layout.simple_list_item_1,
+                autocomplemento);
+        buscar.setAdapter(adapterComplemento);
     }
 
 }
