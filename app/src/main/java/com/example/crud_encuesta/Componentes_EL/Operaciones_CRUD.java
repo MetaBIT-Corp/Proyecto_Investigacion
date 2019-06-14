@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.example.crud_encuesta.Componentes_EL.Carrera.Carrera;
@@ -194,6 +195,29 @@ public class Operaciones_CRUD {
             }while (cu.moveToNext());
         }
 
+        return lista;
+    }
+
+    public static ArrayList<Materia> todosMateriaSpeech(SQLiteDatabase db,String[] parametro) {
+        String where = " WHERE " +EstructuraTablas.COL_4_MATERIA+ " LIKE '%";
+        String where2 = "%' OR " +EstructuraTablas.COL_4_MATERIA+ " LIKE '%";
+        ArrayList<Materia> lista = new ArrayList<>();
+        Cursor cu = db.rawQuery("SELECT * FROM "+EstructuraTablas.MATERIA_TABLA_NAME+
+                where + TextUtils.join(where2, parametro),
+                null);
+
+        if (cu.moveToFirst()) {
+            Materia m;
+            do {
+                m = new Materia();
+                m.setId(cu.getInt(0));
+                m.setCodigo_materia(cu.getString(1));
+                m.setNombre(cu.getString(2));
+                m.setElectiva(cu.getInt(3));
+                m.setMaximo_preguntas(cu.getInt(4));
+                lista.add(m);
+            }while (cu.moveToNext());
+        }
         return lista;
     }
 

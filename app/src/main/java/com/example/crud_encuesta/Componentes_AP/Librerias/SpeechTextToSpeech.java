@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.example.crud_encuesta.Componentes_EL.Materia.Materia;
+import com.example.crud_encuesta.Componentes_EL.Materia.MateriaAdapter;
+import com.example.crud_encuesta.Componentes_EL.Operaciones_CRUD;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,14 +31,12 @@ public class SpeechTextToSpeech {
     Activity activity;
     TextToSpeech textToSpeech;
     SpeechRecognizer speechRecognizer;
-    String tabla;
-    String campo;
-    String condicion;
 
 
     public SpeechTextToSpeech(Context context, Activity activity) {
         this.context = context;
         this.activity = activity;
+
     }
 
     public void inicializarTexttoSpeech() {
@@ -135,6 +139,7 @@ public class SpeechTextToSpeech {
         command = command.toLowerCase();
         Toast.makeText(context,command,Toast.LENGTH_LONG).show();
 
+        /*
         if (command.indexOf("cuál") != -1) {
             if (command.indexOf("nombre") != -1) {
                 speak("Mi nombre es Edwin");
@@ -149,7 +154,7 @@ public class SpeechTextToSpeech {
                         Uri.parse("https://eisi.fia.ues.edu.sv/"));
                 activity.startActivity(intent);
             }
-        }
+        }*/
 
     }
 

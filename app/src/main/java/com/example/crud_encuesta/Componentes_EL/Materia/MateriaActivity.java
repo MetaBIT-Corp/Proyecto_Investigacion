@@ -1,14 +1,27 @@
 package com.example.crud_encuesta.Componentes_EL.Materia;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -32,8 +45,21 @@ import com.example.crud_encuesta.R;
 import com.example.crud_encuesta.SubMenuMateriaActivity;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class MateriaActivity extends AppCompatActivity {
+
+    /*
+    Speech
+     */
+    private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+    TextToSpeech textToSpeech;
+    SpeechRecognizer speechRecognizer;
+    /*
+    FIN Speech
+     */
+
     SQLiteDatabase db;
     DatabaseAccess access;
     ContentValues contentValues;
@@ -45,8 +71,7 @@ public class MateriaActivity extends AppCompatActivity {
     ArrayList<String> listPensumSpinner = new ArrayList<>();
     ArrayList<String> listCarreraSpinner = new ArrayList<>();
     ArrayList<Materia> listaMateria = new ArrayList<>();
-    //Speech
-    SpeechTextToSpeech speech;
+
 
     int id_carrera;
     int id_pensum;
@@ -59,11 +84,6 @@ public class MateriaActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        speech = new SpeechTextToSpeech(this,this);
-
-        speech.inicializarTexttoSpeech();
-        speech.inicializarSpeech();
-
 
         rol=getIntent().getExtras().getInt("rol_user");
 
@@ -75,6 +95,8 @@ public class MateriaActivity extends AppCompatActivity {
         listView = findViewById(R.id.list_view_base);
         access = DatabaseAccess.getInstance(MateriaActivity.this);
         db = access.open();
+
+
 
         //listaEscuelas = Operaciones_CRUD.todosEscuela(EstructuraTablas.ESCUELA_TABLA_NAME, db);
         //listaCarreras = Operaciones_CRUD.todosCarrera(db, listaEscuelas);
@@ -114,7 +136,7 @@ public class MateriaActivity extends AppCompatActivity {
         fab_speech.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                speech.reconocimiento();
+                reconocimiento();
             }
         });
 
@@ -234,17 +256,173 @@ public class MateriaActivity extends AppCompatActivity {
         finish();
     }
 
+    /*
+    SPEECH
+     */
+
+    public void inicializarTexttoSpeech() {
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (textToSpeech.getEngines().size() == 0) {
+                    Toast.makeText(MateriaActivity.this,
+                            "No posees la instalación necesaria",
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    Locale locSpanish = new Locale("spa", "MEX");
+                    textToSpeech.setLanguage(locSpanish);
+                    speak("Iniciando");
+                }
+            }
+        });
+    }
+
+    public void speak(String s) {
+        if (Build.VERSION.SDK_INT >= 21) {
+            textToSpeech.speak(
+                    s,
+                    TextToSpeech.QUEUE_FLUSH,
+                    null,
+                    null
+            );
+        } else {
+            textToSpeech.speak(
+                    s,
+                    TextToSpeech.QUEUE_FLUSH,
+                    null
+            );
+        }
+    }
+    public void ttsShutdown() {
+        textToSpeech.shutdown();
+    }
+
+    public void inicializarSpeech() {
+
+        if (SpeechRecognizer.isRecognitionAvailable(this)) {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+            speechRecognizer.setRecognitionListener(new RecognitionListener() {
+                @Override
+                public void onReadyForSpeech(Bundle params) {
+
+                }
+
+                @Override
+                public void onBeginningOfSpeech() {
+
+                }
+
+                @Override
+                public void onRmsChanged(float rmsdB) {
+
+                }
+
+                @Override
+                public void onBufferReceived(byte[] buffer) {
+
+                }
+
+                @Override
+                public void onEndOfSpeech() {
+
+                }
+
+                @Override
+                public void onError(int error) {
+
+                }
+
+                @Override
+                public void onResults(Bundle results) {
+                    List<String> resultado = results.getStringArrayList(
+                            SpeechRecognizer.RESULTS_RECOGNITION
+                    );
+
+                    processResult(resultado.get(0));
+                }
+
+                @Override
+                public void onPartialResults(Bundle partialResults) {
+
+                }
+
+                @Override
+                public void onEvent(int eventType, Bundle params) {
+
+                }
+            });
+        }
+    }
+
+    public void processResult(String command) {
+        command = command.toLowerCase();
+        String where2 = "%' OR " +EstructuraTablas.COL_4_MATERIA+ " LIKE '%";
+        command = command+"%'";
+        String[] parametros = command.split(" ");
+        listaMateria=Operaciones_CRUD.todosMateriaSpeech(db,parametros);
+        adapter.setL(listaMateria);
+
+        if(listaMateria.size()==0){
+            speak("No se encontró ninguna coincidencia");
+            Toast.makeText(
+                    this,
+                    "No se encontró ninguna coincidencia"
+                    ,Toast.LENGTH_LONG).show();
+        }else {
+            speak("Se han encontrado " +listaMateria.size()+ "registros");
+            Toast.makeText(
+                    this,
+                    "Se han encontrado " +listaMateria.size()+ "registros"
+                    ,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void reconocimiento() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.RECORD_AUDIO)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(MateriaActivity.this,
+                        new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+            speechRecognizer.startListening(intent);
+        }
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
-        speech.ttsShutdown();
+        ttsShutdown();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        speech.inicializarTexttoSpeech();
-        speech.inicializarSpeech();
+        inicializarTexttoSpeech();
+        inicializarSpeech();
     }
+    /*
+    FIN SPEECH
+     */
+
 
 }
