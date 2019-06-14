@@ -1,5 +1,7 @@
 package com.example.crud_encuesta.Componentes_DC.Activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -14,6 +16,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.crud_encuesta.Componentes_AP.Activities.LoginActivity;
+import com.example.crud_encuesta.Componentes_AP.DAO.DAOUsuario;
+import com.example.crud_encuesta.Componentes_AP.Models.Usuario;
 import com.example.crud_encuesta.Componentes_DC.Fragments.UsuarioFragment;
 import com.example.crud_encuesta.Componentes_DC.Fragments.EncuestaFragment;
 import com.example.crud_encuesta.Componentes_DC.Fragments.HomeFragment;
@@ -28,6 +33,8 @@ public class BottomNavActivity extends AppCompatActivity {
     private UsuarioFragment usuarioFrag;
     private BottomNavigationView mMainNav;
     private ImageView menu;
+    private ImageView loggin;
+    private DAOUsuario daoUsuario;
 
     private int id;
     private int rol;
@@ -36,6 +43,8 @@ public class BottomNavActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bottom_nav);
+
+        daoUsuario = new DAOUsuario(this);
 
         homeFrag = new HomeFragment();
         encuestaFrag = new EncuestaFragment();
@@ -99,6 +108,19 @@ public class BottomNavActivity extends AppCompatActivity {
                 }
             }
         });
+
+        loggin = (ImageView) findViewById(R.id.log);
+        loggin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Login();
+                //intento();
+                //evaluacion();
+                //pressed();
+                controlAcceso();
+            }
+        });
+
         //Fin nuevo
     }
 
@@ -110,7 +132,48 @@ public class BottomNavActivity extends AppCompatActivity {
 
     }
 
-    public void onBackPressed(){
+    public void controlAcceso() {
+        final Usuario usuario = daoUsuario.getUsuarioLogueado();
+        if (usuario == null) {
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+        } else {
+            AlertDialog.Builder delete_emergente = new AlertDialog.Builder(this);
+            delete_emergente.setMessage(getResources().getText(R.string.ap_salir) + " " + usuario.getNOMUSUARIO() + "?");
+            delete_emergente.setCancelable(true);
 
+            //Caso positivo
+
+            delete_emergente.setPositiveButton(getResources().getText(R.string.si), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (daoUsuario.logoutUsuario(usuario.getIDUSUARIO())) {
+                        daoUsuario.logoutUsuario(usuario.getIDUSUARIO());
+                        Toast.makeText(getApplication(), getResources().getText(R.string.ap_vuelve) + " " + usuario.getNOMUSUARIO(), Toast.LENGTH_LONG).show();
+                        Intent i = new Intent(getApplication(), LoginActivity.class);
+                        startActivity(i);
+                        finish();
+                    } else {
+                        Toast.makeText(getApplication(), "Ups, algo falló, vuelve a intentar", Toast.LENGTH_LONG);
+                    }
+                }
+            });
+
+            //Caso negativo
+
+            delete_emergente.setNegativeButton(getResources().getText(R.string.no), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // no esperamos que haga nada al cerrar, solo se cierra
+                }
+            });
+            delete_emergente.show(); //mostrar alerta
+
+        }
+    }
+
+
+    public void onBackPressed(){
+        controlAcceso();
     }
 }
