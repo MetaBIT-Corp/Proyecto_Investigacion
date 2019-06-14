@@ -8,9 +8,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.crud_encuesta.Componentes_AP.DAO.DAOUsuario;
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
 
@@ -24,8 +27,14 @@ public class UsuarioFragment extends Fragment {
     private TextView txt_perfil;
     private TextView txt_usermane;
     private TextView txt_nombre;
+    private TextView txt_anio_ingreso;
+    private TextView txt_anio_titulo;
     private SQLiteDatabase cx;
     private DatabaseAccess dba;
+    private LinearLayout lay_nombre;
+    private LinearLayout lay_anio_ingreso;
+    private LinearLayout lay_anio_titulo;
+    private GridLayout grid;
 
     public UsuarioFragment() {
         // Required empty public constructor
@@ -41,6 +50,13 @@ public class UsuarioFragment extends Fragment {
         txt_perfil = (TextView)v.findViewById(R.id.txt_perfil);
         txt_usermane = (TextView)v.findViewById(R.id.txt_usermane);
         txt_nombre = (TextView)v.findViewById(R.id.txt_nombre);
+        txt_anio_ingreso = (TextView)v.findViewById(R.id.txt_anio_ingreso);
+        txt_anio_titulo = (TextView)v.findViewById(R.id.txt_anio_titulo);
+        lay_nombre = (LinearLayout)v.findViewById(R.id.lay_nombre);
+        lay_anio_ingreso = (LinearLayout)v.findViewById(R.id.lay_anio_ingreso);
+        lay_anio_titulo = (LinearLayout)v.findViewById(R.id.lay_anio_titulo);
+        grid = (GridLayout)v.findViewById(R.id.grid);
+
         dba = DatabaseAccess.getInstance(getContext());
         cx = dba.open();
 
@@ -49,22 +65,47 @@ public class UsuarioFragment extends Fragment {
 
         switch (rol) {
             case 0:
-                txt_perfil.setText("Perfil: Administrador");
-                txt_usermane.setText("Username: admin");
+                txt_perfil.setText("Administrador");
+                txt_usermane.setText("admin");
+                grid.removeView(lay_nombre);
+                grid.removeView(lay_anio_ingreso);
+                grid.removeView(lay_anio_titulo);
                 break;
             case 1:
-                txt_perfil.setText("Perfil: Docente");
-                txt_usermane.setText("Username: " + getActivity().getIntent().getExtras().getString("username"));
-                txt_nombre.setText("Nombre: " + getNombre(0));
+                txt_perfil.setText("Docente");
+                txt_usermane.setText("" + getActivity().getIntent().getExtras().getString("username"));
+                txt_nombre.setText("" + getNombre(1));
+                txt_anio_titulo.setText("" + getAnio(1));
+                grid.removeView(lay_anio_ingreso);
                 break;
             case 2:
-                txt_perfil.setText("Perfil: Estudiante");
-                txt_usermane.setText("Username: "+ getActivity().getIntent().getExtras().getString("username"));
-                txt_nombre.setText("Nombre: " + getNombre(1));
+                txt_perfil.setText("Estudiante");
+                txt_usermane.setText(""+ getActivity().getIntent().getExtras().getString("username"));
+                txt_nombre.setText("" + getNombre(0));
+                txt_anio_ingreso.setText("" + getAnio(0));
+                grid.removeView(lay_anio_titulo);
                 break;
         }
 
         return v;
+    }
+
+    private String getAnio(int i) {
+
+        Cursor cursor;
+
+        if (i == 0){
+            cursor = cx.rawQuery("SELECT ANIO_INGRESO FROM ESTUDIANTE WHERE IDUSUARIO="+id, null);
+        }else{
+            cursor = cx.rawQuery("SELECT ANIO_TITULO FROM PDG_DCN_DOCENTE WHERE IDUSUARIO="+id, null);
+        }
+
+        if(cursor.moveToFirst()){
+            return cursor.getString(0);
+        }else{
+            return "";
+        }
+
     }
 
     private String getNombre(int i) {
