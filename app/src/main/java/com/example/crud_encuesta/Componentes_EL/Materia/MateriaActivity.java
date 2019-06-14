@@ -15,7 +15,6 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -43,6 +42,7 @@ import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.MainActivity;
 import com.example.crud_encuesta.R;
 import com.example.crud_encuesta.SubMenuMateriaActivity;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,8 +131,7 @@ public class MateriaActivity extends AppCompatActivity {
         /*
         SPEECH
          */
-        FloatingActionButton fab_speech = findViewById(R.id.fab_speech);
-
+        com.getbase.floatingactionbutton.FloatingActionButton fab_speech = findViewById(R.id.fab_speech);
         fab_speech.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,6 +142,7 @@ public class MateriaActivity extends AppCompatActivity {
         /*
         FINAL SPEECH
          */
+
 
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -270,7 +270,7 @@ public class MateriaActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                     finish();
                 } else {
-                    Locale locSpanish = new Locale("spa", "MEX");
+                    Locale locSpanish = new Locale("spa", "US");
                     textToSpeech.setLanguage(locSpanish);
                     speak("Iniciando");
                 }

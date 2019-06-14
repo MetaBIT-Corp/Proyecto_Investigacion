@@ -44,6 +44,11 @@
         <item name="colorControlNormal">@color/primary_text</item>
         <item name="colorControlActivated">@color/primary_text</item>
     </style>
+    <!-- Estilo para etiquetas-->
+    <style name="Etiquetas">
+        <item name="android:background">@drawable/background_label_fab</item>
+        <item name="android:textColor">#fafafa</item>
+    </style>
 
 
 </resources>
