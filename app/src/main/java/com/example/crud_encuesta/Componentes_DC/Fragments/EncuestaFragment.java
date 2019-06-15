@@ -1,16 +1,25 @@
 package com.example.crud_encuesta.Componentes_DC.Fragments;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +46,8 @@ import com.example.crud_encuesta.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 /**
@@ -44,6 +55,7 @@ import java.util.Vector;
  */
 public class EncuestaFragment extends Fragment {
     AutoCompleteTextView buscar;
+
 
     SQLiteDatabase db;
     DatabaseAccess access;
@@ -276,5 +288,7 @@ public class EncuestaFragment extends Fragment {
                 autocomplemento);
         buscar.setAdapter(adapterComplemento);
     }
+
+
 
 }
