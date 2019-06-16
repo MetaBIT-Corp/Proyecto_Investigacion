@@ -1,10 +1,12 @@
 package com.example.crud_encuesta.Componentes_DC.Activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -31,8 +33,6 @@ import com.example.crud_encuesta.Componentes_MT.Area.AreaActivity;
 import com.example.crud_encuesta.Componentes_MT.Excel.Excel;
 import com.example.crud_encuesta.R;
 import com.example.crud_encuesta.SubMenuMateriaActivity;
-import com.nbsp.materialfilepicker.MaterialFilePicker;
-import com.nbsp.materialfilepicker.ui.FilePickerActivity;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -59,6 +59,7 @@ public class PreguntaActivity extends AppCompatActivity {
     private ImageButton excelUpload;
     private ImageButton excelDownload;
     private String path_excel="";
+    private static final int REQUEST_CODE = 43;
     //----------------------------------------------End-------------------------------------------//
 
     @Override
@@ -230,19 +231,19 @@ public class PreguntaActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            if(data != null){
+                path_excel = data.getData().getPath();
 
-        if (requestCode == 1000 && resultCode == RESULT_OK) {
-            path_excel = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
-            //Toast.makeText(this, path_excel, Toast.LENGTH_SHORT).show();
-            Excel excel = new Excel(this);
-            if(excel.leerExcel(path_excel, id_area)>0){
-                Toast.makeText(this, "Se ha importado conéxito", Toast.LENGTH_SHORT).show();
-                adaptadorRV.notifyDataSetChanged();
-                lista_preguntas = dao.verTodos();
-            }else{
-                Toast.makeText(this, "Hubo un error o el documento está vacío", Toast.LENGTH_SHORT).show();
+                Excel excel = new Excel(this);
+                if(excel.leerExcel(path_excel, id_area)>0){
+                    Toast.makeText(this, "Se ha importado conéxito", Toast.LENGTH_SHORT).show();
+                    adaptadorRV.notifyDataSetChanged();
+                    lista_preguntas = dao.verTodos();
+                }else{
+                    Toast.makeText(this, "Hubo un error o el documento está vacío", Toast.LENGTH_SHORT).show();
+                }
             }
-
         }
     }
 
@@ -308,13 +309,10 @@ public class PreguntaActivity extends AppCompatActivity {
 
     //Subir preguntas desde el dispositivo
     public void cargarExcel(){
-        new MaterialFilePicker()
-                .withActivity(PreguntaActivity.this)
-                .withRequestCode(1000)
-                .withFilter(Pattern.compile(".*\\.xls$")) // Filtering files and directories by file name using regexp
-                // .withFilterDirectories(true) // Set directories filterable (false by default)
-                .withHiddenFiles(true) // Show hidden files and folders
-                .start();
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("file/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, REQUEST_CODE);
     }
     //----------------------------------------------End-------------------------------------------//
 }
