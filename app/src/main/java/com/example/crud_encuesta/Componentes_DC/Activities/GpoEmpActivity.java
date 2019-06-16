@@ -200,7 +200,7 @@ public class GpoEmpActivity extends AppCompatActivity {
                 path_excel = data.getData().getPath();
 
                 Excel excel = new Excel(this);
-                if(excel.leerExcel(path_excel, id_area)>0){
+                if(excel.leerExcelEM(path_excel, id_area)>0){
                     Toast.makeText(this, "Se ha importado conéxito", Toast.LENGTH_SHORT).show();
                     adaptador.notifyDataSetChanged();
                     lista_gpo_emp = dao.verTodos();
