@@ -12,8 +12,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -54,6 +56,9 @@ public class EncuestaActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     TextToSpeech textToSpeech;
     SpeechRecognizer speechRecognizer;
+
+    MediaPlayer mediaPlayer;
+    private Handler handler = new Handler();
     /*
     FIN Speech
      */
@@ -320,7 +325,7 @@ public class EncuestaActivity extends AppCompatActivity {
                 } else {
                     Locale locSpanish = new Locale("spa", "US");
                     textToSpeech.setLanguage(locSpanish);
-                    speak("Iniciando");
+                    //speak("Iniciando");
                 }
             }
         });
@@ -412,12 +417,28 @@ public class EncuestaActivity extends AppCompatActivity {
         adapter.setL(listaEncuesta);
 
         if(listaEncuesta.size()==0){
+            mediaPlayer =MediaPlayer.create(getApplicationContext(), R.raw.fail);
+            mediaPlayer.start();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //mensaje
+                }
+            },500000);
             speak("No se encontró ninguna coincidencia");
             Toast.makeText(
                     this,
                     "No se encontró ninguna coincidencia"
                     ,Toast.LENGTH_LONG).show();
         }else {
+            mediaPlayer =MediaPlayer.create(getApplicationContext(), R.raw.campana);
+            mediaPlayer.start();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //mensaje
+                }
+            },500000);
             speak("Cantidad de registros encontrados: " +listaEncuesta.size());
             Toast.makeText(
                     this,

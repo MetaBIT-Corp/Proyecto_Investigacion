@@ -8,9 +8,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -59,6 +61,10 @@ public class MateriaActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     TextToSpeech textToSpeech;
     SpeechRecognizer speechRecognizer;
+
+    MediaPlayer mediaPlayer;
+    private Handler handler = new Handler();
+
     /*
     FIN Speech
      */
@@ -88,7 +94,6 @@ public class MateriaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_materia);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         rol=getIntent().getExtras().getInt("rol_user");
 
@@ -286,7 +291,7 @@ public class MateriaActivity extends AppCompatActivity {
                 } else {
                     Locale locSpanish = new Locale("spa", "US");
                     textToSpeech.setLanguage(locSpanish);
-                    speak("Iniciando");
+                    //speak("Iniciando");
                 }
             }
         });
@@ -378,17 +383,33 @@ public class MateriaActivity extends AppCompatActivity {
         adapter.setL(listaMateria);
 
         if(listaMateria.size()==0){
-            speak("No se encontró ninguna coincidencia");
+            mediaPlayer =MediaPlayer.create(getApplicationContext(), R.raw.fail);
+            mediaPlayer.start();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //mensaje
+                }
+            },500000);
             Toast.makeText(
                     this,
                     "No se encontró ninguna coincidencia"
                     ,Toast.LENGTH_LONG).show();
+            speak("No se encontró ninguna coincidencia");
         }else {
-            speak("Cantidad de registros encontrados: " +listaMateria.size());
+            mediaPlayer =MediaPlayer.create(getApplicationContext(), R.raw.campana);
+            mediaPlayer.start();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //mensaje
+                }
+            },500000);
             Toast.makeText(
                     this,
                     "Cantidad de registros encontrados: " +listaMateria.size()
                     ,Toast.LENGTH_LONG).show();
+            speak("Cantidad de registros encontrados: " +listaMateria.size());
         }
     }
 
