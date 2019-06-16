@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +25,17 @@ import com.example.crud_encuesta.Componentes_MR.Funciones;
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Vector;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 public class ActivityEstudiante extends AppCompatActivity {
 
@@ -35,6 +46,11 @@ public class ActivityEstudiante extends AppCompatActivity {
     private Usuario usuario;
     private SQLiteDatabase db;
     private DatabaseAccess access;
+
+    Session session = null;
+    String rec;
+    String subject="Creación de Usuario Estudiante";
+    String textMessage;
 
     AutoCompleteTextView buscar;
 
@@ -161,7 +177,7 @@ public class ActivityEstudiante extends AppCompatActivity {
                             dao.insertar(estudiante);
 
                             /*Dialogo para Aviso sobre nuevo User creado con credenciales.*/
-                            final AlertDialog.Builder usrAlert= new AlertDialog.Builder(ActivityEstudiante.this);
+                            /*final AlertDialog.Builder usrAlert= new AlertDialog.Builder(ActivityEstudiante.this);
                             int clave_tamanio = usuario.getCLAVE().length();
                             String astericos ="";
                             for(int i=0;i<clave_tamanio-2;i++){
@@ -172,9 +188,32 @@ public class ActivityEstudiante extends AppCompatActivity {
                             usrAlert.setPositiveButton(R.string.aceptar, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {}
-                            });
-                            usrAlert.show();
+                            });*/
 
+                            rec = carnet.getText().toString().trim()+("@ues.edu.sv");
+                            textMessage="¡Felicidades "+nombre.getText().toString()+"! Su usuario con credenciales de <b>Estudiante</b> ha sido creado exitosamente.<br><br>" +
+                                    "Sus credenciales son:<br><br>" +
+                                    "<b>Usuario</b>: "+carnet.getText().toString()+"<br>" +
+                                    "<b>Contraseña</b>: "+carnet.getText().toString()+"<br><br>" +
+                                    "Muchas gracias por utilizar la aplicación de Encuestas de la FIA/UES";
+
+                            Properties props = new Properties();
+                            props.put("mail.smtp.host", "smtp.gmail.com");
+                            props.put("mail.smtp.socketFactory.port", "465");
+                            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                            props.put("mail.smtp.auth", "true");
+                            props.put("mail.smtp.port", "465");
+
+                            session = Session.getDefaultInstance(props, new Authenticator() {
+                                protected PasswordAuthentication getPasswordAuthentication() {
+                                    return new PasswordAuthentication("remitentemoviles@gmail.com", "Moviles115");
+                                }
+                            });
+
+                            RetreiveFeedTask task = new RetreiveFeedTask();
+                            task.execute();
+
+                            /*usrAlert.show();*/
                             lista = dao.verTodos();
                             adapter.notifyDataSetChanged();
                             autoComplemento();
@@ -208,5 +247,31 @@ public class ActivityEstudiante extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 autocomplemento);
         buscar.setAdapter(adapterComplemento);
+    }
+
+    class RetreiveFeedTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            try{
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress("testfrom354@gmail.com"));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(rec));
+                message.setSubject(subject);
+                message.setContent(textMessage, "text/html; charset=utf-8");
+                Transport.send(message);
+            } catch(MessagingException e) {
+                e.printStackTrace();
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(getApplicationContext(), "¡Estudiante y usuario creados!\nCorreo Electrónico Enviado.", Toast.LENGTH_LONG).show();
+        }
     }
 }
