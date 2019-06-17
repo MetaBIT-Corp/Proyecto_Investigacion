@@ -32,7 +32,7 @@ public class IntentoActivity extends AppCompatActivity {
         id_estudiante = getIntent().getIntExtra("id_estudiante", 0);
 
         listView = (ListView)findViewById(R.id.lsPreguntas);
-        listView.setAdapter(new IntentoAdapter(getPreguntas(), id_estudiante, id_clave, id_encuestado, this, this, tamanio));
+        listView.setAdapter(new IntentoAdapter(getPreguntas(), id_estudiante, id_clave, id_encuestado, id_turno,this, this, tamanio));
     }
 
     public List<Pregunta> getPreguntas(){

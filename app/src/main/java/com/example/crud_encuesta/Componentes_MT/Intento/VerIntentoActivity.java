@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
@@ -16,16 +17,22 @@ import java.util.List;
 
 public class VerIntentoActivity extends AppCompatActivity {
     ListView listView;
+    TextView txtTitle;
     int id_usuario;
+    double nota;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ver_intento);
 
-        id_usuario = getIntent().getIntExtra("id_estudiante", 0);
-
         listView = (ListView)findViewById(R.id.lsVerPreguntas);
+        txtTitle = findViewById(R.id.txtTitle);
+
+        id_usuario = getIntent().getIntExtra("id_estudiante", 0);
+        nota = getIntent().getDoubleExtra("nota", 0);
+
+        txtTitle.setText("Nota: "+nota);
         listView.setAdapter(new VerIntentoAdapter(getPreguntas(), this, this));
 
     }

@@ -61,18 +61,25 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
     int id_estudiante;
     int id_clave;
     int id_encuestado;
+    int id_turno;
 
-    public IntentoAdapter(List<Pregunta> preguntas, int id_estudiante, int id_clave, int id_encuestado, Context context, Activity activity, Tamanio tamanio) {
+    public IntentoAdapter(List<Pregunta> preguntas, int id_estudiante, int id_clave, int id_encuestado, int id_turno, Context context, Activity activity, Tamanio tamanio) {
         this.preguntas = preguntas;
         this.id_estudiante = id_estudiante;
         this.id_clave = id_clave;
         this. id_encuestado = id_encuestado;
+        this.id_turno = id_turno;
         this.context = context;
         this.activity = activity;
         this.tamanio = tamanio;
 
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-        iniciar_intento();
+        id_intento = id_intento(id_estudiante);
+        if(primerIntento(id_estudiante, id_turno)){
+            iniciar_intento();
+        }else{
+            deleteRespuesta(id_intento);
+        }
     }
 
     @Override
@@ -262,6 +269,7 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
             public void onClick(View v) {
                 AlertDialog.Builder emergente = new AlertDialog.Builder(context);
                 emergente.setTitle(R.string.mt_finalizar);
+                emergente.setCancelable(false);
                 emergente.setMessage(R.string.mt_finalizar_evaluacion);
                 emergente.setIcon(R.drawable.infoazul);
 
@@ -272,13 +280,15 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
                         terminar_intento();
 
                         AlertDialog.Builder nota = new AlertDialog.Builder(context);
-                        nota.setTitle("Nombre evaluación");
+                        nota.setTitle("Evaluación finalizada");
+                        nota.setCancelable(false);
                         nota.setMessage("Nota: " + calcular_nota());
                         nota.setPositiveButton(R.string.mt_aceptar, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Intent i = new Intent(context, VerIntentoActivity.class);
                                 i.putExtra("id_estudiante", id_estudiante);
+                                i.putExtra("nota", calcular_nota());
                                 context.startActivity(i);
                                 activity.finish();
                             }
@@ -468,6 +478,42 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
 
         return  cursor.getString(0);
     }
+
+    public boolean primerIntento(int id_estudiante, int id_turno){
+        boolean resultado=true;
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(context);
+        SQLiteDatabase db = databaseAccess.open();
+
+        try{
+            Cursor cursor = db.rawQuery("SELECT * FROM INTENTO WHERE ID_EST="+id_estudiante+" AND ID_CLAVE IN\n" +
+                    "(SELECT ID_CLAVE FROM CLAVE WHERE ID_TURNO = "+id_turno+")", null);
+
+            if(cursor.getCount()>0){
+                resultado = false;
+            }else{
+                resultado = true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        db.close();
+
+        return  resultado;
+    }
+     public int id_intento(int id_est){
+         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(context);
+         SQLiteDatabase db = databaseAccess.open();
+
+         return IntentoConsultasDB.id_ultimo_intento(id_est, db);
+     }
+
+     public void deleteRespuesta(int id_intento){
+         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(context);
+         SQLiteDatabase db = databaseAccess.open();
+
+         db.execSQL("DELETE FROM RESPUESTA WHERE ID_INTENTO="+id_intento);
+         db.close();
+     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

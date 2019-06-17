@@ -20,6 +20,13 @@
         tools:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/ic_launcher_background"/>
+
     </android.support.v7.widget.Toolbar>
 
     <ListView
