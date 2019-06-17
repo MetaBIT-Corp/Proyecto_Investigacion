@@ -56,23 +56,32 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
     private List<EditText> et_posicion_lista = new ArrayList<>();
 
     private int id_intento;
+    private boolean sumIntento=false;
 
     //Datos de otros modelos
     int id_estudiante;
     int id_clave;
-    int id_encuestado;
+    int id_encuesta;
+    int id_turno;
 
-    public IntentoAdapter(List<Pregunta> preguntas, int id_estudiante, int id_clave, int id_encuestado, Context context, Activity activity, Tamanio tamanio) {
+    public IntentoAdapter(List<Pregunta> preguntas, int id_estudiante, int id_clave, int id_encuesta, int id_turno, Context context, Activity activity, Tamanio tamanio) {
         this.preguntas = preguntas;
         this.id_estudiante = id_estudiante;
         this.id_clave = id_clave;
-        this. id_encuestado = id_encuestado;
+        this. id_encuesta = id_encuesta;
+        this.id_turno = id_turno;
         this.context = context;
         this.activity = activity;
         this.tamanio = tamanio;
 
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-        iniciar_intento();
+        id_intento = id_intento(id_estudiante);
+        if(primerIntento(id_estudiante, id_turno)){
+            iniciar_intento();
+        }else{
+            deleteRespuesta(id_intento);
+            sumIntento=true;
+        }
     }
 
     @Override
@@ -262,7 +271,13 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
             public void onClick(View v) {
                 AlertDialog.Builder emergente = new AlertDialog.Builder(context);
                 emergente.setTitle(R.string.mt_finalizar);
-                emergente.setMessage(R.string.mt_finalizar_evaluacion);
+                emergente.setCancelable(false);
+                if(id_encuesta==0){
+                    emergente.setMessage(R.string.mt_finalizar_evaluacion);
+                }else{
+                    emergente.setMessage("¿Desea finalizar la encuesta?");
+                }
+
                 emergente.setIcon(R.drawable.infoazul);
 
                 emergente.setPositiveButton(R.string.mt_finalizar, new DialogInterface.OnClickListener() {
@@ -272,18 +287,38 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
                         terminar_intento();
 
                         AlertDialog.Builder nota = new AlertDialog.Builder(context);
-                        nota.setTitle("Nombre evaluación");
-                        nota.setMessage("Nota: " + calcular_nota());
-                        nota.setPositiveButton(R.string.mt_aceptar, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent i = new Intent(context, VerIntentoActivity.class);
-                                i.putExtra("id_estudiante", id_estudiante);
-                                context.startActivity(i);
-                                activity.finish();
-                            }
-                        });
-                        nota.show();
+                        if(id_encuesta==0){
+                            nota.setTitle("Evaluación finalizada");
+                            nota.setCancelable(false);
+                            nota.setMessage("Nota: " + calcular_nota());
+                            nota.setPositiveButton(R.string.mt_aceptar, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent i = new Intent(context, VerIntentoActivity.class);
+                                    i.putExtra("id_estudiante", id_estudiante);
+                                    i.putExtra("nota", calcular_nota());
+                                    context.startActivity(i);
+                                    activity.finish();
+                                }
+                            });
+                            nota.show();
+                        }else{
+                            nota.setTitle("Encuesta");
+                            nota.setCancelable(false);
+                            nota.setMessage("Gracias por participar, sus respuestas fueron almacenadas");
+                            nota.setPositiveButton(R.string.mt_aceptar, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent i = new Intent(context, VerIntentoActivity.class);
+                                    i.putExtra("id_estudiante", id_estudiante);
+                                    i.putExtra("id_encuesta", id_encuesta);
+                                    context.startActivity(i);
+                                    activity.finish();
+                                }
+                            });
+                            nota.show();
+                        }
+
                     }
                 });
 
@@ -323,7 +358,7 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
         ContentValues registro = new ContentValues();
         registro.put("id_est", id_estudiante);
         registro.put("id_clave", id_clave);
-        registro.put("id", id_encuestado);
+        registro.put("id", id_encuesta);
         registro.put("fecha_inicio_intento", fecha_actual());
         registro.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
 
@@ -343,6 +378,8 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
 
         reg.put("fecha_final_intento", fecha_actual());
         reg.put("nota_intento", calcular_nota());
+
+        if(sumIntento) reg.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
 
         db.update("intento", reg, "id_intento=" + id_intento, null);
 
@@ -467,6 +504,41 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
         cursor.moveToFirst();
 
         return  cursor.getString(0);
+    }
+
+    public boolean primerIntento(int id_estudiante, int id_turno){
+        boolean resultado=true;
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(context);
+        SQLiteDatabase db = databaseAccess.open();
+        try{
+            Cursor cursor = db.rawQuery("SELECT * FROM INTENTO WHERE ID_EST="+id_estudiante+" AND ID_CLAVE IN\n" +
+                    "(SELECT ID_CLAVE FROM CLAVE WHERE ID_TURNO = "+id_turno+")", null);
+
+            if(cursor.getCount()>0){
+                resultado = false;
+            }else{
+                resultado = true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        db.close();
+
+        return  resultado;
+    }
+    public int id_intento(int id_est){
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(context);
+        SQLiteDatabase db = databaseAccess.open();
+
+        return IntentoConsultasDB.id_ultimo_intento(id_est, db);
+    }
+
+    public void deleteRespuesta(int id_intento){
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(context);
+        SQLiteDatabase db = databaseAccess.open();
+
+        db.execSQL("DELETE FROM RESPUESTA WHERE ID_INTENTO="+id_intento);
+        db.close();
     }
 
     @Override

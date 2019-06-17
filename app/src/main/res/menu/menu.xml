@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="Settings"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/item_home"
         android:icon="@drawable/baseline_home_black_18dp"
         android:title="@string/home" />

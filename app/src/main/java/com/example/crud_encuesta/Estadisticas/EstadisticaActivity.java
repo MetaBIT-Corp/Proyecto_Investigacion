@@ -87,8 +87,8 @@ public class EstadisticaActivity extends AppCompatActivity {
 
             //Agregando leyenda personalizada
             ArrayList<LegendEntry> leyendas = new ArrayList<>();
-            LegendEntry l1 = new LegendEntry("Aprobado", Legend.LegendForm.CIRCLE, 10f, 0.0f, null, ColorTemplate.COLORFUL_COLORS[0]);
-            LegendEntry l2 = new LegendEntry("Reprobado", Legend.LegendForm.CIRCLE, 10f, 0.0f, null, ColorTemplate.COLORFUL_COLORS[1]);
+            LegendEntry l1 = new LegendEntry("Aprobados", Legend.LegendForm.CIRCLE, 10f, 0.0f, null, ColorTemplate.COLORFUL_COLORS[0]);
+            LegendEntry l2 = new LegendEntry("Reprobados", Legend.LegendForm.CIRCLE, 10f, 0.0f, null, ColorTemplate.COLORFUL_COLORS[1]);
             leyendas.add(l1);
             leyendas.add(l2);
 
@@ -118,8 +118,9 @@ public class EstadisticaActivity extends AppCompatActivity {
             //Ocualtando YAxisRigth
             YAxis yAxis = grafico.getAxisRight();
             yAxis.setEnabled(false);
-            yAxis = grafico.getAxisRight();
-            yAxis.setAxisMaximum(10);
+            yAxis = grafico.getAxisLeft();
+            yAxis.setAxisMaximum(Consultas.cantidadInscritos(idMat,EstadisticaActivity.this));
+            yAxis.setGranularity(1);
             yAxis.setAxisMinimum(0);
 
 

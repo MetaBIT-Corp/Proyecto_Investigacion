@@ -65,7 +65,7 @@ public class DAOEstudiante {
 
     public ArrayList<Estudiante> verTodos(){
         lista.clear();
-        Cursor cursor = cx.rawQuery("SELECT * FROM ESTUDIANTE",null);
+        Cursor cursor = cx.rawQuery("SELECT * FROM ESTUDIANTE ORDER BY CARNET COLLATE NOCASE ASC ",null);
 
         if(cursor != null && cursor.getCount()>0){
             cursor.moveToFirst();
@@ -85,6 +85,24 @@ public class DAOEstudiante {
     public ArrayList<Estudiante> verBusqueda(String parametro){
         lista.clear();
         Cursor cursor = cx.rawQuery("SELECT * FROM ESTUDIANTE WHERE NOMBRE LIKE '%"+parametro+"%' OR CARNET LIKE'%"+parametro+"%'",null);
+        if (cursor != null && cursor.getCount()>0){
+            cursor.moveToFirst();
+            do {
+                lista.add(new Estudiante(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getInt(3),
+                        cursor.getString(4),
+                        cursor.getInt(5)));
+            }while(cursor.moveToNext());
+        }
+        return lista;
+    }
+
+    public ArrayList<Estudiante> verBusquedaIndex(String parametro){
+        lista.clear();
+        Cursor cursor = cx.rawQuery("SELECT * FROM ESTUDIANTE WHERE CARNET LIKE '"+parametro+"%'",null);
         if (cursor != null && cursor.getCount()>0){
             cursor.moveToFirst();
             do {
