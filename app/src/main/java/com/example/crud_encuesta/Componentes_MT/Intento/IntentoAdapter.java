@@ -303,7 +303,7 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
                             });
                             nota.show();
                         }else{
-                            nota.setTitle("Gracias por participar");
+                            nota.setTitle("Encuesta");
                             nota.setCancelable(false);
                             nota.setMessage("Gracias por participar, sus respuestas fueron almacenadas");
                             nota.setPositiveButton(R.string.mt_aceptar, new DialogInterface.OnClickListener() {
