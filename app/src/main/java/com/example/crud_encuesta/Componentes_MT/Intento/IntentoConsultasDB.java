@@ -119,7 +119,7 @@ public class IntentoConsultasDB {
 
     public static int getClave(int id_turno, SQLiteDatabase db){
         List<Integer> claves = new ArrayList<>();
-        int id_clave;
+        int id_clave=0;
 
         try {
             Cursor cursor = db.rawQuery("SELECT ID_CLAVE FROM CLAVE WHERE ID_TURNO ="+id_turno, null);
@@ -130,8 +130,31 @@ public class IntentoConsultasDB {
             Log.d("Database", "Ocurrio un error");
         }
 
-        int generado = (int) (Math.random() * claves.size());
-        id_clave = claves.get(generado);
+        if(claves.size()>0){
+            int generado = (int) (Math.random() * claves.size());
+            id_clave = claves.get(generado);
+        }
+
+        return id_clave;
+    }
+
+    public static int getClaveEncuesta(int id_encuesta, SQLiteDatabase db){
+        List<Integer> claves = new ArrayList<>();
+        int id_clave=0;
+        try {
+            Cursor cursor = db.rawQuery("SELECT ID_CLAVE FROM CLAVE WHERE ID_ENCUESTA ="+id_encuesta, null);
+            while (cursor.moveToNext()){
+                claves.add(cursor.getInt(0));
+                System.out.println("--------------hey 2");
+            }
+        } catch (Exception e) {
+            Log.d("Database", "Ocurrio un error");
+        }
+
+        if(claves.size()>0){
+            int generado = (int) (Math.random() * claves.size());
+            id_clave = claves.get(generado);
+        }
 
         return id_clave;
     }

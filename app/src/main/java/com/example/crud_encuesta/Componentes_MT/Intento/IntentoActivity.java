@@ -19,7 +19,7 @@ public class IntentoActivity extends AppCompatActivity {
     //Datos de otros modelos
     private int id_clave;
     private int id_turno;
-    private int id_encuestado;
+    private int id_encuesta;
     private int id_estudiante;
 
     @Override
@@ -28,11 +28,11 @@ public class IntentoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_intento);
 
         id_turno = getIntent().getIntExtra("id_turno_intento", 0);
-        id_encuestado = getIntent().getIntExtra("id_encuesta_intento", 0);
+        id_encuesta = getIntent().getIntExtra("id_encuesta", 0);
         id_estudiante = getIntent().getIntExtra("id_estudiante", 0);
 
         listView = (ListView)findViewById(R.id.lsPreguntas);
-        listView.setAdapter(new IntentoAdapter(getPreguntas(), id_estudiante, id_clave, id_encuestado, id_turno,this, this, tamanio));
+        listView.setAdapter(new IntentoAdapter(getPreguntas(), id_estudiante, id_clave, id_encuesta, id_turno,this, this, tamanio));
     }
 
     public List<Pregunta> getPreguntas(){
@@ -52,7 +52,14 @@ public class IntentoActivity extends AppCompatActivity {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         SQLiteDatabase db = databaseAccess.open();
 
-        id_clave = IntentoConsultasDB.getClave(id_turno, db);
+        System.out.println("--------id_turno:"+id_turno);
+        System.out.println("--------id_encuesta:"+id_encuesta);
+        System.out.println("--------id_clave:"+id_clave);
+        if(id_turno!=0) id_clave = IntentoConsultasDB.getClave(id_turno, db);
+        if(id_encuesta!=0) id_clave = IntentoConsultasDB.getClaveEncuesta(id_encuesta, db);
+        System.out.println("--------id_turno:"+id_turno);
+        System.out.println("--------id_encuesta:"+id_encuesta);
+        System.out.println("--------id_clave:"+id_clave);
 
         String sentencia_pregunta = "SELECT ID_PREGUNTA, ID_GRUPO_EMP, PREGUNTA FROM PREGUNTA WHERE ID_PREGUNTA IN\n" +
                 "(SELECT ID_PREGUNTA FROM CLAVE_AREA_PREGUNTA WHERE ID_CLAVE_AREA IN\n" +
@@ -75,7 +82,6 @@ public class IntentoActivity extends AppCompatActivity {
             id = cursor_pregunta.getInt(0);
             pregunta = cursor_pregunta.getString(2);
             id_gpo = cursor_pregunta.getInt(1);
-
             modalidad = IntentoConsultasDB.getModalidad(id, db);
             ponderacion = IntentoConsultasDB.getPonderacion(id, id_clave, id_gpo, modalidad, db);
             descripcion = IntentoConsultasDB.getDescripcion(id_gpo, db);
@@ -106,7 +112,6 @@ public class IntentoActivity extends AppCompatActivity {
         }
 
         cursor_pregunta.close();
-
         return preguntas;
     }
 
