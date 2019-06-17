@@ -60,7 +60,7 @@ public class UsuarioFragment extends Fragment {
 
         video= (VideoView) v.findViewById(R.id.video);
 
-        Uri uri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
+        Uri uri = Uri.parse("https://instagram.fsal3-1.fna.fbcdn.net/vp/6882fd9ffd20fe2b06212aea8e81e61a/5D0A633E/t50.2886-16/64668640_370729323576264_6329386514329985304_n.mp4?_nc_ht=instagram.fsal3-1.fna.fbcdn.net");
         video.setMediaController((new MediaController(v.getContext())));
         video.setVideoURI(uri);
         video.requestFocus();
