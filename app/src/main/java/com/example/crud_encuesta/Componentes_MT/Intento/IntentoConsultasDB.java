@@ -45,7 +45,7 @@ public class IntentoConsultasDB {
         int peso;
         int cantidad;
 
-        sentencia="SELECT NUMERO_PREGUNTAS, PESO FROM CLAVE_AREA WHERE ID_CLAVE = "+id_clave+" AND ID_CLAVE_AREA =\n" +
+        sentencia="SELECT NUMERO_PREGUNTAS, PESO FROM CLAVE_AREA WHERE ID_CLAVE = "+id_clave+" AND ID_CLAVE_AREA IN\n" +
                 "(SELECT ID_CLAVE_AREA FROM CLAVE_AREA_PREGUNTA WHERE ID_PREGUNTA="+id_pregunta+")";
 
         Cursor cursor = db.rawQuery(sentencia,null);

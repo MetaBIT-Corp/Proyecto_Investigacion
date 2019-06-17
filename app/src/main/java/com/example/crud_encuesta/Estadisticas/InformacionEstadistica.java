@@ -71,6 +71,6 @@ public class InformacionEstadistica {
     @Override
     public String toString() {
         return "Evaluacion:"+nomEva+"\nAlumnos Evaluados: "+cantidaEvaluados+" de "+cantidadInscritos+"\nAprobados: "+aprobados+
-                "\nReprobados: "+reprobados+"\nMayor Nota: "+mayorNota+"\n";
+                "\nReprobados: "+reprobados+"\nMayor Nota: "+mayorNota+"";
     }
 }
