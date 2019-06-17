@@ -59,8 +59,8 @@ public class UsuarioFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_usuario, container, false);
 
         video= (VideoView) v.findViewById(R.id.video);
-
-        Uri uri = Uri.parse("https://instagram.fsal3-1.fna.fbcdn.net/vp/6882fd9ffd20fe2b06212aea8e81e61a/5D0A633E/t50.2886-16/64668640_370729323576264_6329386514329985304_n.mp4?_nc_ht=instagram.fsal3-1.fna.fbcdn.net");
+        String urlv = "https://scontent.cdninstagram.com/vp/3f9cf3ccfae33538354103083cfa17ae/5D0A5FDC/t50.2886-16/60486859_603385080153653_5491402385592942592_n.mp4?_nc_ht=scontent.cdninstagram.com";
+        Uri uri = Uri.parse(urlv);
         video.setMediaController((new MediaController(v.getContext())));
         video.setVideoURI(uri);
         video.requestFocus();
