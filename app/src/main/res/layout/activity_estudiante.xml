@@ -53,16 +53,7 @@
             android:focusableInTouchMode="true"
             android:orientation="horizontal"
             android:padding="20dp">
-            <!--
-            <EditText
-                android:id="@+id/find_nom"
-                android:layout_width="253dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_weight="2"
-                android:hint="@string/edtx_buscar"
-                android:textColor="@color/primary_text" />
-                -->
+
             <AutoCompleteTextView
                 android:id="@+id/auto"
                 android:layout_width="253dp"
@@ -89,25 +80,32 @@
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-            <ListView
-                android:id="@+id/lista_estudiante"
-                android:layout_width="384dp"
-                android:layout_height="match_parent"
-                android:focusable="true">
-                <requestFocus />
-            </ListView>
+            <LinearLayout
+                android:layout_width="379dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="0.9">
+                <ListView
+                    android:id="@+id/lista_estudiante"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusable="true">
+                </ListView>
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/side_index"
-                android:layout_width="30dp"
+                android:layout_width="25dp"
                 android:layout_height="match_parent"
-                android:background="#c3c3c3"
+                android:background="?attr/colorPrimary"
                 android:gravity="center_horizontal"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical"
+                android:layout_weight="0.1"
+                ></LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

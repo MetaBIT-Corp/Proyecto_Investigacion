@@ -5,4 +5,5 @@
     android:layout_height="fill_parent"
     android:gravity="center"
     android:padding="3dp"
-    android:textSize="14sp" />
+    android:textSize="14sp"
+    android:textColor="@color/icons"/>
