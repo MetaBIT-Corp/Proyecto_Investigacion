@@ -56,6 +56,7 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
     private List<EditText> et_posicion_lista = new ArrayList<>();
 
     private int id_intento;
+    private boolean sumIntento=false;
 
     //Datos de otros modelos
     int id_estudiante;
@@ -79,6 +80,7 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
             iniciar_intento();
         }else{
             deleteRespuesta(id_intento);
+            sumIntento=true;
         }
     }
 
@@ -353,6 +355,8 @@ public class IntentoAdapter extends BaseAdapter implements AdapterView.OnItemSel
 
         reg.put("fecha_final_intento", fecha_actual());
         reg.put("nota_intento", calcular_nota());
+
+        if(sumIntento) reg.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
 
         db.update("intento", reg, "id_intento=" + id_intento, null);
 
