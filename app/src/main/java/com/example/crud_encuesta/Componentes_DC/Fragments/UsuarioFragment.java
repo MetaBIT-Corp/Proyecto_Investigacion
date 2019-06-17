@@ -3,19 +3,25 @@ package com.example.crud_encuesta.Componentes_DC.Fragments;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.crud_encuesta.Componentes_AP.DAO.DAOUsuario;
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
+
+import java.io.File;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +42,11 @@ public class UsuarioFragment extends Fragment {
     private LinearLayout lay_anio_titulo;
     private GridLayout grid;
 
+
+    VideoView video;
+    MediaController mediacontrol;
+
+
     public UsuarioFragment() {
         // Required empty public constructor
     }
@@ -46,6 +57,15 @@ public class UsuarioFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_usuario, container, false);
+
+        video= (VideoView) v.findViewById(R.id.video);
+
+        Uri uri = Uri.parse("http://techslides.com/demos/sample-videos/small.mp4");
+        video.setMediaController((new MediaController(v.getContext())));
+        video.setVideoURI(uri);
+        video.requestFocus();
+        video.start();
+
 
         txt_perfil = (TextView)v.findViewById(R.id.txt_perfil);
         txt_usermane = (TextView)v.findViewById(R.id.txt_usermane);
