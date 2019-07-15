@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +23,6 @@ import com.example.crud_encuesta.Componentes_AP.Activities.PensumActivity;
 import com.example.crud_encuesta.Componentes_AP.Activities.TurnoActivity;
 import com.example.crud_encuesta.Componentes_AP.DAO.DAOUsuario;
 import com.example.crud_encuesta.Componentes_AP.Models.Usuario;
-import com.example.crud_encuesta.Componentes_DC.Activities.BottomNavActivity;
 import com.example.crud_encuesta.Componentes_MR.Docente.ActivityDocente;
 import com.example.crud_encuesta.Componentes_EL.Materia.MateriaUsersActivity;
 import com.example.crud_encuesta.Componentes_MR.Estudiante.ActivityEstudiante;
@@ -48,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imgLlenarBD;
     private ImageView imgVaciarBD;
     DAOUsuario daoUsuario;
-    private ImageView bottomNav;
 
     int id = 0;
     int rol = 0;
@@ -71,17 +68,7 @@ public class MainActivity extends AppCompatActivity {
         id = getIntent().getExtras().getInt("id_user");
         rol = getIntent().getExtras().getInt("rol_user");
 
-        bottomNav = (ImageView)findViewById(R.id.bottomNav);
-        bottomNav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent in = new Intent(MainActivity.this, BottomNavActivity.class);
-                in.putExtra("id_user", id);
-                in.putExtra("rol_user", rol);
-                in.putExtra("username",getIntent().getExtras().getString("username"));
-                startActivity(in);
-            }
-        });
+
 
         switch (rol) {
             case 0:
