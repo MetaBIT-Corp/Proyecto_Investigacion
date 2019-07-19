@@ -20,6 +20,8 @@ public class VerIntentoActivity extends AppCompatActivity {
     TextView txtTitle;
     int id_usuario;
     int id_encuesta;
+    List<Integer> idSP = new ArrayList<>();
+    List<String> opcionSP = new ArrayList<>();
     double nota;
 
     @Override
@@ -35,7 +37,7 @@ public class VerIntentoActivity extends AppCompatActivity {
         id_encuesta = getIntent().getIntExtra("id_encuesta", 0);
 
         if(id_encuesta==0) txtTitle.setText("Nota: "+nota);
-        listView.setAdapter(new VerIntentoAdapter(getPreguntas(), id_encuesta, this, this));
+        listView.setAdapter(new VerIntentoAdapter(getPreguntas(), id_encuesta, idSP, opcionSP, this, this));
 
     }
 
@@ -85,6 +87,10 @@ public class VerIntentoActivity extends AppCompatActivity {
             while (cursor_opcion.moveToNext()){
                 ides.add(cursor_opcion.getInt(0));
                 opciones.add(cursor_opcion.getString(1));
+                if(modalidad==3){
+                    idSP.add(cursor_opcion.getInt(0));
+                    opcionSP.add(cursor_opcion.getString(1));
+                }
                 if(cursor_opcion.getInt(2)==1) respuesta=cursor_opcion.getInt(0);
             }
 

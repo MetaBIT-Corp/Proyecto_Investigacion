@@ -31,18 +31,23 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
     private LayoutInflater inflater;
     private Context context;
     private List<PreguntaRevision> preguntas = new ArrayList<>();
+    private List<Integer> idSP;
+    private List<String> opcionSP;
     private Activity activity;
     private int id_encuesta;
 
-    private List<Integer> idesGPO = new ArrayList<>();
+    //private List<Integer> idesGPO = new ArrayList<>();
 
-    public VerIntentoAdapter(List<PreguntaRevision> preguntas, int id_encuesta, Activity activity, Context context) {
+    public VerIntentoAdapter(List<PreguntaRevision> preguntas, int id_encuesta, List<Integer> idSP, List<String> opcionSP, Activity activity, Context context) {
         this.preguntas = preguntas;
+        this.idSP = idSP;
+        this.opcionSP = opcionSP;
         this.activity = activity;
         this.context = context;
         this.id_encuesta = id_encuesta;
 
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+        System.out.println("-----------Tamaño---------"+preguntas.size());
     }
 
     @Override
@@ -50,8 +55,12 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
         final View mView = inflater.inflate(R.layout.elemento_list_pregunta, null);
         TextView txt_pregrunta = mView.findViewById(R.id.txtPregunta);
         LinearLayout ll_pregunta = mView.findViewById(R.id.llPregunta);
+
         Button inicio = new Button(context);
         inicio.setText(R.string.mt_ir_inicio);
+        inicio.setTextSize(20);
+        inicio.setTextColor(Color.WHITE);
+        inicio.setBackground(context.getResources().getDrawable(R.drawable.estilo_boton_intento));
 
         switch (preguntas.get(position).modalidad) {
             case 1:
@@ -113,12 +122,6 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
             case 3:
                 txt_pregrunta.setText(preguntas.get(position).descripcion);
                 ArrayAdapter<String> comboAdapter;
-                List<String> opcionesGPO = new ArrayList<>();
-
-                for(int i=0; i<preguntas.get(position).opciones.size(); i++){
-                    opcionesGPO.add(preguntas.get(position).opciones.get(i));
-                    idesGPO.add(preguntas.get(position).ides.get(i));
-                }
 
                 TextView txt = new TextView(context);
                 Spinner spGPO = new Spinner(context);
@@ -131,14 +134,14 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
 
                 txt.setPadding(0,40,0,40);
 
-                comboAdapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item, opcionesGPO);
+                comboAdapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item, opcionSP);
                 spGPO.setAdapter(comboAdapter);
 
-                for (int i =0; i<idesGPO.size(); i++) {
-                    if(idesGPO.get(i)==preguntas.get(position).eleccion){
+                for (int i =0; i<idSP.size(); i++) {
+                    if(idSP.get(i)==preguntas.get(position).eleccion){
                         spGPO.setSelection(i);
 
-                        if(idesGPO.get(i)==preguntas.get(position).respuesta){
+                        if(idSP.get(i)==preguntas.get(position).respuesta){
                             spGPO.setBackgroundColor(Color.GREEN);
                         }else{
                             if(id_encuesta!=0) spGPO.setBackgroundColor(Color.BLUE);
@@ -146,7 +149,6 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
                         }
                     }
                 }
-                spGPO.setSelection(1);
 
                 spGPO.setEnabled(false);
 

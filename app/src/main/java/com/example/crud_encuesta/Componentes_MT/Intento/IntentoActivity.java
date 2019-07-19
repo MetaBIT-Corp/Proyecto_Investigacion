@@ -1,38 +1,153 @@
 package com.example.crud_encuesta.Componentes_MT.Intento;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class IntentoActivity extends AppCompatActivity {
     private ListView listView;
     Tamanio tamanio;
 
+    private List<RadioGroup> rg_lista = new ArrayList<>();
+    private List<Spinner> sp_lista = new ArrayList<>();
+    private List<RadioGroup> rg_lista_vf = new ArrayList<>();
+    private List<EditText> et_lista = new ArrayList<>();
+    private List<Integer> idPreguntaRC = new ArrayList<>();
+    private List<Integer> idGPOS = new ArrayList<>();
+
     //Datos de otros modelos
     private int id_clave;
     private int id_turno;
     private int id_encuesta;
     private int id_estudiante;
+    int indice =0;
+    List<Pregunta> preguntas = new ArrayList<>();
+    List<ModalidadPregunta> modalidadPreguntas = new ArrayList<>();
+    LinearLayout ll_principal;
+    LinearLayout ll;
+    int id_intento;
+    private boolean sumIntento=false;
+    private CountDownTimer countDownTimer;
+    private TextView txtTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intento);
+        txtTimer = findViewById(R.id.txtTitle);
+
 
         id_turno = getIntent().getIntExtra("id_turno_intento", 0);
         id_encuesta = getIntent().getIntExtra("id_encuesta", 0);
         id_estudiante = getIntent().getIntExtra("id_estudiante", 0);
+        ll_principal = findViewById(R.id.llPrincipal);
 
-        listView = (ListView)findViewById(R.id.lsPreguntas);
-        listView.setAdapter(new IntentoAdapter(getPreguntas(), id_estudiante, id_clave, id_encuesta, id_turno,this, this, tamanio));
+        preguntas= getPreguntas();
+
+        id_intento = id_intento(id_estudiante);
+        if(primerIntento(id_estudiante, id_turno)){
+            iniciar_intento();
+        }else{
+            deleteRespuesta(id_intento);
+            sumIntento=true;
+        }
+
+        Button finalizar = new Button(this);
+        finalizar.setText("Finalizar");
+
+        /*--------------------- Estilos ------------------------*/
+        finalizar.setTextSize(20);
+        finalizar.setTextColor(Color.WHITE);
+        finalizar.setBackground(this.getResources().getDrawable(R.drawable.estilo_boton_intento));
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(0, 20, 0, 100);
+        /*--------------------- End Estilos ------------------------*/
+
+        final PreguntaView preguntaView = new PreguntaView(this);
+        cuentaRegresiva(getDuracionTurno(id_turno));
+
+        while(indice<preguntas.size()){
+            ReturnView retorno = preguntaView.getVista(preguntas.get(indice));
+            ModalidadPregunta modalidadPregunta = new ModalidadPregunta();
+
+            List<Spinner> sp_lista2 = new ArrayList<>();
+
+            ll = (LinearLayout) retorno.getView();
+
+            ll.setPadding(30,30,30,30);
+            ll.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            ll.setBackground(this.getResources().getDrawable(R.drawable.estilo_layout_intento));
+
+            ll_principal.addView(ll, layoutParams);
+
+            if(preguntas.get(indice).modalidad==1){
+                modalidadPregunta.setOpcion_multiple(retorno.getRadioGroupOM());
+                rg_lista.add(retorno.getRadioGroupOM());
+            }
+            if(preguntas.get(indice).modalidad==2){
+                modalidadPregunta.setVerdadero_falso(retorno.getRadioGroupVF());
+                rg_lista_vf.add(retorno.getRadioGroupVF());
+            }
+            if(preguntas.get(indice).modalidad==3){
+                sp_lista = retorno.getSpinner();
+
+                //sp_lista2 = retorno.getSpinner();
+                idGPOS = retorno.getIdPreguntaSP();
+                //pruebaSP.add((ArrayList<Spinner>) sp_lista2);
+            }
+            if(preguntas.get(indice).modalidad==4){
+                modalidadPregunta.setRespuesta_corta(retorno.getEditText());
+                et_lista.add(retorno.getEditText());
+                idPreguntaRC.add(retorno.getIdPreguntaRC());
+            }
+
+            modalidadPreguntas.add(modalidadPregunta);
+
+            if(indice==preguntas.size()-1) ll_principal.addView(finalizar);
+            indice++;
+        }
+
+        finalizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finalizar();
+            }
+        });//2358911
+
+    }
+
+    @Override
+    public void onBackPressed(){
+        finalizar();
     }
 
     public List<Pregunta> getPreguntas(){
@@ -52,14 +167,8 @@ public class IntentoActivity extends AppCompatActivity {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         SQLiteDatabase db = databaseAccess.open();
 
-        System.out.println("--------id_turno:"+id_turno);
-        System.out.println("--------id_encuesta:"+id_encuesta);
-        System.out.println("--------id_clave:"+id_clave);
         if(id_turno!=0) id_clave = IntentoConsultasDB.getClave(id_turno, db);
         if(id_encuesta!=0) id_clave = IntentoConsultasDB.getClaveEncuesta(id_encuesta, db);
-        System.out.println("--------id_turno:"+id_turno);
-        System.out.println("--------id_encuesta:"+id_encuesta);
-        System.out.println("--------id_clave:"+id_clave);
 
         String sentencia_pregunta = "SELECT ID_PREGUNTA, ID_GRUPO_EMP, PREGUNTA FROM PREGUNTA WHERE ID_PREGUNTA IN\n" +
                 "(SELECT ID_PREGUNTA FROM CLAVE_AREA_PREGUNTA WHERE ID_CLAVE_AREA IN\n" +
@@ -131,5 +240,343 @@ public class IntentoActivity extends AppCompatActivity {
         }
     }
 
+    public String fecha_actual() {
+        Date date = new Date();
+        DateFormat fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String convertido = fechaHora.format(date);
+
+        return convertido;
+    }
+
+    public int id_intento(int id_est){
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+
+        return IntentoConsultasDB.id_ultimo_intento(id_est, db);
+    }
+
+    public String rc_getOpcion(int id){
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+
+        Cursor cursor = db.rawQuery("SELECT OPCION FROM OPCION WHERE ID_OPCION="+id, null);
+        cursor.moveToFirst();
+
+        return  cursor.getString(0);
+    }
+
+    public void iniciar_intento() {
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+
+        ContentValues registro = new ContentValues();
+        registro.put("id_est", id_estudiante);
+        registro.put("id_clave", id_clave);
+        registro.put("id", id_encuesta);
+        registro.put("fecha_inicio_intento", fecha_actual());
+        registro.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
+
+        db.insert("intento", null, registro);
+        Cursor cursor = db.rawQuery("SELECT ID_INTENTO FROM INTENTO ORDER BY ID_INTENTO DESC LIMIT 1", null);
+        cursor.moveToFirst();
+
+        id_intento = cursor.getInt(0);
+
+    }
+
+    public void modelo_respuesta(List<RadioGroup> rg_seleccion, List<Spinner> sp_seleccion, List<EditText> et_seleccion, List<RadioGroup> rg_seleccion_vf) {
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+        ContentValues registro = new ContentValues();
+
+        if(rg_seleccion !=null || rg_seleccion.size()>0){
+            for (RadioGroup rg : rg_seleccion) {
+                int id_seleccion;
+
+                if(rg.getCheckedRadioButtonId() != -1){
+                    id_seleccion = rg.getCheckedRadioButtonId();
+                }else{
+                    id_seleccion = 0;
+                }
+
+                registro.put("id_opcion", id_seleccion);
+                registro.put("id_intento", id_intento);
+                registro.put("id_pregunta", rg.getId());
+                db.insert("respuesta", null, registro);
+            }
+        }
+
+        if(rg_seleccion_vf !=null || rg_seleccion_vf.size()>0){
+            for (RadioGroup rg : rg_seleccion_vf) {
+                int id_seleccion;
+
+                if(rg.getCheckedRadioButtonId() != -1){
+                    id_seleccion = rg.getCheckedRadioButtonId();
+                }else{
+                    id_seleccion = 0;
+                }
+
+                registro.put("id_opcion", id_seleccion);
+                registro.put("id_intento", id_intento);
+                registro.put("id_pregunta", rg.getId());
+                db.insert("respuesta", null, registro);
+            }
+        }
+
+        if(sp_seleccion !=null || sp_seleccion.size()>0){
+            for (Spinner sp : sp_seleccion) {
+                registro.put("id_opcion", idGPOS.get(sp.getSelectedItemPosition()));
+                registro.put("id_intento", id_intento);
+                registro.put("id_pregunta", sp.getId());
+                db.insert("respuesta", null, registro);
+            }
+        }
+
+        if(et_seleccion !=null || et_seleccion.size()>0){
+            int i =0;
+            for (EditText et : et_seleccion) {
+                registro.put("id_opcion", et.getId());
+                registro.put("id_intento", id_intento);
+                registro.put("id_pregunta", idPreguntaRC.get(i));
+                registro.put("texto_respuesta", et.getText().toString());
+                db.insert("respuesta", null, registro);
+                i++;
+            }
+        }
+
+    }
+
+    public void terminar_intento() {
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+
+        ContentValues reg = new ContentValues();
+
+        reg.put("fecha_final_intento", fecha_actual());
+        reg.put("nota_intento", calcular_nota());
+
+        if(sumIntento) reg.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
+
+        db.update("intento", reg, "id_intento=" + id_intento, null);
+
+
+    }
+
+    public double calcular_nota() {
+        double nota = 0.0;
+        int i = 0;
+        int f =0;
+
+        while (i < preguntas.size()) {
+
+            if(preguntas.get(i).modalidad==1){
+                if (preguntas.get(i).preguntaPList.get(0).respuesta == modalidadPreguntas.get(i).getOpcion_multiple().getCheckedRadioButtonId()) {
+                    nota += preguntas.get(i).preguntaPList.get(0).ponderacion;
+                }
+
+            }else if(preguntas.get(i).modalidad==2){
+                if (preguntas.get(i).preguntaPList.get(0).respuesta == modalidadPreguntas.get(i).getVerdadero_falso().getCheckedRadioButtonId()) {
+                    nota += preguntas.get(i).preguntaPList.get(0).ponderacion;
+                }
+            }/*else if(preguntas.get(i).modalidad==3){
+                for(int j=0; j<pruebaSP.size();j++){
+                    System.out.println("-------------------Indice: "+j);
+                    System.out.println("-------------------Tamaño: "+pruebaSP.size());
+                    //int re = sp_lista.get(j).getId();
+                    int re = preguntas.get(i).preguntaPList.get(j).respuesta;
+                    System.out.println("------------------- 1: ");
+                    int el = idGPOS.get(pruebaSP.get(f).get(j).getSelectedItemPosition());
+                    System.out.println("------------------- 2: ");
+                    if(re==el){
+                        nota +=preguntas.get(i).preguntaPList.get(j).ponderacion;
+                    }
+                }
+                f++;*/else if(preguntas.get(i).modalidad==3){
+                for(int j=0; j<sp_lista.size();j++){
+                    System.out.println("-------------------Indice: "+j);
+                    System.out.println("-------------------Tamaño: "+sp_lista.size());
+                    //int re = sp_lista.get(j).getId();
+                    int re = preguntas.get(i).preguntaPList.get(j).respuesta;
+                    System.out.println("------------------- 1: ");
+                    int el = idGPOS.get(sp_lista.get(j).getSelectedItemPosition());
+                    System.out.println("------------------- 2: ");
+                    if(re==el){
+                        nota +=preguntas.get(i).preguntaPList.get(j).ponderacion;
+                    }
+                }
+
+            }else if(preguntas.get(i).modalidad==4){
+                int id_respuesta = preguntas.get(i).preguntaPList.get(0).respuesta;
+                String valor_digitado = modalidadPreguntas.get(i).getRespuesta_corta().getText().toString().toLowerCase();
+                String respuesta = rc_getOpcion(id_respuesta).toLowerCase();
+                if(respuesta.equals(valor_digitado)){
+                    nota += preguntas.get(i).preguntaPList.get(0).ponderacion;
+                }
+            }
+            i++;
+
+        }
+
+        nota = new BigDecimal(nota).setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+
+        return nota;
+    }
+
+    public boolean primerIntento(int id_estudiante, int id_turno){
+        boolean resultado=true;
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+        try{
+            Cursor cursor = db.rawQuery("SELECT * FROM INTENTO WHERE ID_EST="+id_estudiante+" AND ID_CLAVE IN\n" +
+                    "(SELECT ID_CLAVE FROM CLAVE WHERE ID_TURNO = "+id_turno+")", null);
+
+            if(cursor.getCount()>0){
+                resultado = false;
+            }else{
+                resultado = true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        db.close();
+        System.out.println("-------------------------primero intento "+resultado);
+
+        return  resultado;
+    }
+
+    public void deleteRespuesta(int id_intento){
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+
+        db.execSQL("DELETE FROM RESPUESTA WHERE ID_INTENTO="+id_intento);
+        db.close();
+    }
+
+    public void cuentaRegresiva(long duracion){
+        countDownTimer = new CountDownTimer(duracion, 1000) {
+            @Override
+            public void onTick(long l) {
+                int seconds = (int) ((l / 1000) % 60);
+                int minutes = (int) ((l / (60 * 1000)) % 60);
+                int hours = (int) (l / (60 * 60 * 1000));
+
+
+                txtTimer.setText("Tiempo restante : " +  String.format("%02d:%02d:%02d", hours, minutes, seconds));
+                txtTimer.setTypeface(null, Typeface.BOLD);
+
+                if(l<60000) txtTimer.setTextColor(Color.rgb(170, 0, 0));
+            }
+
+            @Override
+            public void onFinish() {
+                modelo_respuesta(rg_lista, sp_lista, et_lista, rg_lista_vf);
+                terminar_intento();
+
+                AlertDialog.Builder nota = new AlertDialog.Builder(IntentoActivity.this);
+                if(id_encuesta==0){
+                    nota.setTitle("Tiempo finalizado");
+                    nota.setCancelable(false);
+                    nota.setMessage("Nota: " + calcular_nota());
+                    nota.setPositiveButton(R.string.mt_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent i = new Intent(IntentoActivity.this, VerIntentoActivity.class);
+                            i.putExtra("id_estudiante", id_estudiante);
+                            i.putExtra("nota", calcular_nota());
+                            startActivity(i);
+                            finish();
+                        }
+                    });
+                    nota.show();
+                }
+            }
+        };
+        countDownTimer.start();
+    }
+
+    public long getDuracionTurno(int id_turno){
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+        long duracion=0;
+
+        try{
+            Cursor cursor = db.rawQuery("SELECT DURACION FROM EVALUACION WHERE ID_EVALUACION IN\n" +
+                    "(SELECT ID_EVALUACION FROM TURNO WHERE ID_TURNO ="+id_turno+")", null);
+            if(cursor.moveToFirst()){
+                duracion=cursor.getLong(0) * 60 * 1000;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return  duracion;
+    }
+
+    public void finalizar(){
+        AlertDialog.Builder emergente = new AlertDialog.Builder(this);
+        emergente.setTitle(R.string.mt_finalizar);
+        emergente.setCancelable(false);
+        if(id_encuesta==0){
+            emergente.setMessage(R.string.mt_finalizar_evaluacion);
+        }else{
+            emergente.setMessage("¿Desea finalizar la encuesta?");
+        }
+
+        emergente.setIcon(R.drawable.infoazul);
+
+        emergente.setPositiveButton(R.string.mt_finalizar, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                modelo_respuesta(rg_lista, sp_lista, et_lista, rg_lista_vf);
+                terminar_intento();
+                countDownTimer.cancel();
+
+                AlertDialog.Builder nota = new AlertDialog.Builder(IntentoActivity.this);
+                if(id_encuesta==0){
+                    nota.setTitle("Evaluación finalizada");
+                    nota.setCancelable(false);
+                    nota.setMessage("Nota: " + calcular_nota());
+                    nota.setPositiveButton(R.string.mt_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent i = new Intent(IntentoActivity.this, VerIntentoActivity.class);
+                            i.putExtra("id_estudiante", id_estudiante);
+                            i.putExtra("nota", calcular_nota());
+                            startActivity(i);
+                            finish();
+                        }
+                    });
+                    nota.show();
+                }else{
+                    nota.setTitle("Gracias por participar");
+                    nota.setCancelable(false);
+                    nota.setMessage("Gracias por participar, sus respuestas fueron almacenadas");
+                    nota.setPositiveButton(R.string.mt_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent i = new Intent(IntentoActivity.this, VerIntentoActivity.class);
+                            i.putExtra("id_estudiante", id_estudiante);
+                            i.putExtra("id_encuesta", id_encuesta);
+                            startActivity(i);
+                            finish();
+                        }
+                    });
+                    nota.show();
+                }
+
+            }
+        });
+
+        emergente.setNegativeButton(R.string.mt_cancelar, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        emergente.show();
+    }
+
+
 }
+
 

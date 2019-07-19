@@ -22,8 +22,12 @@
         <activity android:name=".SubMenuMateriaActivity" />
         <activity android:name=".Componentes_AP.Activities.PensumMateriaActivity" />
         <activity android:name=".Componentes_AP.Activities.PensumActivity" />
-        <activity android:name=".Componentes_MT.Intento.VerIntentoActivity" />
-        <activity android:name=".Componentes_MT.Intento.IntentoActivity" />
+        <activity
+            android:name=".Componentes_MT.Intento.VerIntentoActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Componentes_MT.Intento.IntentoActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Componentes_MT.ClaveArea.VerAreasActivity"
             android:label="ClaveArea" />
@@ -38,7 +42,9 @@
         <activity
             android:name=".Componentes_MT.Clave.ClaveActivity"
             android:label="@string/mt_clave" />
-        <activity android:name=".Componentes_AP.Activities.TurnoActivity" />
+        <activity
+            android:name=".Componentes_AP.Activities.TurnoActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Componentes_AP.Activities.EvaluacionActivity" />
         <activity android:name=".Componentes_AP.Activities.LoginActivity">
             <intent-filter>
