@@ -21,7 +21,9 @@ import java.util.List;
 
 public class PreguntaView implements AdapterView.OnItemSelectedListener {
     private Context context;
-    private List<Spinner> sp_lista = new ArrayList<>();
+    //private List<Spinner> sp_lista = new ArrayList<>();
+    //List<String> opcionesGPO = new ArrayList<>();
+    //List<Integer> id_preguntas = new ArrayList<>();
 
     public PreguntaView(Context context){
         this.context = context;
@@ -104,6 +106,7 @@ public class PreguntaView implements AdapterView.OnItemSelectedListener {
                 break;
 
             case 3:
+                List<Spinner> sp_lista = new ArrayList<>();
                 txt_pregunta.setText(preguntas.descripcion);
 
                 ArrayAdapter<String> comboAdapter;

@@ -33,15 +33,12 @@ import java.util.Date;
 import java.util.List;
 
 public class IntentoActivity extends AppCompatActivity {
-    private ListView listView;
     Tamanio tamanio;
 
     private List<RadioGroup> rg_lista = new ArrayList<>();
-    private List<Spinner> sp_lista = new ArrayList<>();
     private List<RadioGroup> rg_lista_vf = new ArrayList<>();
     private List<EditText> et_lista = new ArrayList<>();
     private List<Integer> idPreguntaRC = new ArrayList<>();
-    private List<Integer> idGPOS = new ArrayList<>();
 
     //Datos de otros modelos
     private int id_clave;
@@ -57,6 +54,8 @@ public class IntentoActivity extends AppCompatActivity {
     private boolean sumIntento=false;
     private CountDownTimer countDownTimer;
     private TextView txtTimer;
+    private ArrayList<ArrayList<Spinner>> preguntasSP = new ArrayList<ArrayList<Spinner>>();
+    private ArrayList<ArrayList<Integer>> idsSp = new ArrayList<ArrayList<Integer>>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,14 +91,21 @@ public class IntentoActivity extends AppCompatActivity {
         layoutParams.setMargins(0, 20, 0, 100);
         /*--------------------- End Estilos ------------------------*/
 
-        final PreguntaView preguntaView = new PreguntaView(this);
-        cuentaRegresiva(getDuracionTurno(id_turno));
+        //Titulo de IntentoActivity
+        if(id_encuesta!=0){
+            txtTimer.setText(getFechaEncuesta(id_encuesta));
+        }else{
+            cuentaRegresiva(getDuracionTurno(id_turno));
+        }
 
+        //final PreguntaView preguntaView = new PreguntaView(this);
         while(indice<preguntas.size()){
+            PreguntaView preguntaView = new PreguntaView(this);
             ReturnView retorno = preguntaView.getVista(preguntas.get(indice));
             ModalidadPregunta modalidadPregunta = new ModalidadPregunta();
 
             List<Spinner> sp_lista2 = new ArrayList<>();
+            List<Integer> id_lista = new ArrayList<>();
 
             ll = (LinearLayout) retorno.getView();
 
@@ -118,11 +124,8 @@ public class IntentoActivity extends AppCompatActivity {
                 rg_lista_vf.add(retorno.getRadioGroupVF());
             }
             if(preguntas.get(indice).modalidad==3){
-                sp_lista = retorno.getSpinner();
-
-                //sp_lista2 = retorno.getSpinner();
-                idGPOS = retorno.getIdPreguntaSP();
-                //pruebaSP.add((ArrayList<Spinner>) sp_lista2);
+                sp_lista2 = retorno.getSpinner();
+                id_lista = retorno.getIdPreguntaSP();
             }
             if(preguntas.get(indice).modalidad==4){
                 modalidadPregunta.setRespuesta_corta(retorno.getEditText());
@@ -131,6 +134,8 @@ public class IntentoActivity extends AppCompatActivity {
             }
 
             modalidadPreguntas.add(modalidadPregunta);
+            preguntasSP.add((ArrayList<Spinner>) sp_lista2);
+            idsSp.add((ArrayList<Integer>) id_lista);
 
             if(indice==preguntas.size()-1) ll_principal.addView(finalizar);
             indice++;
@@ -192,7 +197,7 @@ public class IntentoActivity extends AppCompatActivity {
             pregunta = cursor_pregunta.getString(2);
             id_gpo = cursor_pregunta.getInt(1);
             modalidad = IntentoConsultasDB.getModalidad(id, db);
-            ponderacion = IntentoConsultasDB.getPonderacion(id, id_clave, id_gpo, modalidad, db);
+            ponderacion = IntentoConsultasDB.getPonderacion(id, id_clave, modalidad, db);
             descripcion = IntentoConsultasDB.getDescripcion(id_gpo, db);
 
             aumentarTamanio(modalidad);
@@ -284,7 +289,7 @@ public class IntentoActivity extends AppCompatActivity {
 
     }
 
-    public void modelo_respuesta(List<RadioGroup> rg_seleccion, List<Spinner> sp_seleccion, List<EditText> et_seleccion, List<RadioGroup> rg_seleccion_vf) {
+    public void modelo_respuesta(List<RadioGroup> rg_seleccion, ArrayList<ArrayList<Spinner>> sp_seleccion_a, List<EditText> et_seleccion, List<RadioGroup> rg_seleccion_vf) {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         SQLiteDatabase db = databaseAccess.open();
         ContentValues registro = new ContentValues();
@@ -323,12 +328,16 @@ public class IntentoActivity extends AppCompatActivity {
             }
         }
 
-        if(sp_seleccion !=null || sp_seleccion.size()>0){
-            for (Spinner sp : sp_seleccion) {
-                registro.put("id_opcion", idGPOS.get(sp.getSelectedItemPosition()));
-                registro.put("id_intento", id_intento);
-                registro.put("id_pregunta", sp.getId());
-                db.insert("respuesta", null, registro);
+        if(sp_seleccion_a !=null || sp_seleccion_a.size()>0){
+            int i=0;
+            for (ArrayList<Spinner> sp_a : sp_seleccion_a) {
+                for(Spinner sp: sp_a){
+                    registro.put("id_opcion", idsSp.get(i).get(sp.getSelectedItemPosition()));
+                    registro.put("id_intento", id_intento);
+                    registro.put("id_pregunta", sp.getId());
+                    db.insert("respuesta", null, registro);
+                }
+                i++;
             }
         }
 
@@ -365,7 +374,6 @@ public class IntentoActivity extends AppCompatActivity {
     public double calcular_nota() {
         double nota = 0.0;
         int i = 0;
-        int f =0;
 
         while (i < preguntas.size()) {
 
@@ -378,33 +386,14 @@ public class IntentoActivity extends AppCompatActivity {
                 if (preguntas.get(i).preguntaPList.get(0).respuesta == modalidadPreguntas.get(i).getVerdadero_falso().getCheckedRadioButtonId()) {
                     nota += preguntas.get(i).preguntaPList.get(0).ponderacion;
                 }
-            }/*else if(preguntas.get(i).modalidad==3){
-                for(int j=0; j<pruebaSP.size();j++){
-                    System.out.println("-------------------Indice: "+j);
-                    System.out.println("-------------------Tamaño: "+pruebaSP.size());
-                    //int re = sp_lista.get(j).getId();
-                    int re = preguntas.get(i).preguntaPList.get(j).respuesta;
-                    System.out.println("------------------- 1: ");
-                    int el = idGPOS.get(pruebaSP.get(f).get(j).getSelectedItemPosition());
-                    System.out.println("------------------- 2: ");
-                    if(re==el){
-                        nota +=preguntas.get(i).preguntaPList.get(j).ponderacion;
+            }else if(preguntas.get(i).modalidad==3){
+                    for (int k=0; k<preguntasSP.get(i).size(); k++){
+                        int re = preguntas.get(i).preguntaPList.get(k).respuesta;
+                        int el = idsSp.get(i).get(preguntasSP.get(i).get(k).getSelectedItemPosition());
+                        if(re==el){
+                            nota +=preguntas.get(i).preguntaPList.get(k).ponderacion;
+                        }
                     }
-                }
-                f++;*/else if(preguntas.get(i).modalidad==3){
-                for(int j=0; j<sp_lista.size();j++){
-                    System.out.println("-------------------Indice: "+j);
-                    System.out.println("-------------------Tamaño: "+sp_lista.size());
-                    //int re = sp_lista.get(j).getId();
-                    int re = preguntas.get(i).preguntaPList.get(j).respuesta;
-                    System.out.println("------------------- 1: ");
-                    int el = idGPOS.get(sp_lista.get(j).getSelectedItemPosition());
-                    System.out.println("------------------- 2: ");
-                    if(re==el){
-                        nota +=preguntas.get(i).preguntaPList.get(j).ponderacion;
-                    }
-                }
-
             }else if(preguntas.get(i).modalidad==4){
                 int id_respuesta = preguntas.get(i).preguntaPList.get(0).respuesta;
                 String valor_digitado = modalidadPreguntas.get(i).getRespuesta_corta().getText().toString().toLowerCase();
@@ -439,7 +428,6 @@ public class IntentoActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         db.close();
-        System.out.println("-------------------------primero intento "+resultado);
 
         return  resultado;
     }
@@ -448,7 +436,12 @@ public class IntentoActivity extends AppCompatActivity {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         SQLiteDatabase db = databaseAccess.open();
 
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("fecha_inicio_intento", fecha_actual());
+
         db.execSQL("DELETE FROM RESPUESTA WHERE ID_INTENTO="+id_intento);
+        db.update("intento",contentValues, "id_intento="+id_intento, null);
+
         db.close();
     }
 
@@ -469,7 +462,7 @@ public class IntentoActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                modelo_respuesta(rg_lista, sp_lista, et_lista, rg_lista_vf);
+                modelo_respuesta(rg_lista, preguntasSP, et_lista, rg_lista_vf);
                 terminar_intento();
 
                 AlertDialog.Builder nota = new AlertDialog.Builder(IntentoActivity.this);
@@ -527,9 +520,9 @@ public class IntentoActivity extends AppCompatActivity {
         emergente.setPositiveButton(R.string.mt_finalizar, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                modelo_respuesta(rg_lista, sp_lista, et_lista, rg_lista_vf);
+                modelo_respuesta(rg_lista, preguntasSP, et_lista, rg_lista_vf);
                 terminar_intento();
-                countDownTimer.cancel();
+                if(id_encuesta==0) countDownTimer.cancel();
 
                 AlertDialog.Builder nota = new AlertDialog.Builder(IntentoActivity.this);
                 if(id_encuesta==0){
@@ -548,7 +541,7 @@ public class IntentoActivity extends AppCompatActivity {
                     });
                     nota.show();
                 }else{
-                    nota.setTitle("Gracias por participar");
+                    //nota.setTitle("Gracias por participar");
                     nota.setCancelable(false);
                     nota.setMessage("Gracias por participar, sus respuestas fueron almacenadas");
                     nota.setPositiveButton(R.string.mt_aceptar, new DialogInterface.OnClickListener() {
@@ -574,6 +567,23 @@ public class IntentoActivity extends AppCompatActivity {
             }
         });
         emergente.show();
+    }
+
+    public String getFechaEncuesta(int id_encuesta){
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+        String duracion="";
+
+        try{
+            Cursor cursor = db.rawQuery("SELECT * FROM ENCUESTA WHERE ID_ENCUESTA="+id_encuesta, null);
+            if(cursor.moveToFirst()){
+                duracion = "Disponibilidad: "+cursor.getString(4)+" - "+cursor.getString(5);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return duracion;
     }
 
 

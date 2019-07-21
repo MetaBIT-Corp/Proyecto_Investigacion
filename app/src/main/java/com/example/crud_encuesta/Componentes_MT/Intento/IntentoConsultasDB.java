@@ -38,7 +38,7 @@ public class IntentoConsultasDB {
         return cursor.getCount();
     }
 
-    public static float getPonderacion(int id_pregunta, int id_clave, int id_emp, int modalidad, SQLiteDatabase db){
+    public static float getPonderacion(int id_pregunta, int id_clave, int modalidad, SQLiteDatabase db){
 
         float valor_pregunta;
         String sentencia;
@@ -51,7 +51,16 @@ public class IntentoConsultasDB {
         Cursor cursor = db.rawQuery(sentencia,null);
         cursor.moveToFirst();
 
-        Cursor cursor_emp = db.rawQuery("SELECT * FROM PREGUNTA WHERE ID_GRUPO_EMP ="+id_emp, null);
+        /*Cursor cursor_emp = db.rawQuery("SELECT * FROM PREGUNTA WHERE ID_GRUPO_EMP IN\n" +
+                                            "(SELECT ID_GRUPO_EMP FROM GRUPO_EMPAREJAMIENTO WHERE ID_AREA IN\n" +
+                                            "(SELECT ID_AREA FROM AREA WHERE ID_TIPO_ITEM=3 AND ID_AREA IN\n" +
+                                            "(SELECT ID_AREA FROM CLAVE_AREA WHERE ID_CLAVE="+id_clave+")))", null);*/
+
+        Cursor cursor_emp = db.rawQuery(
+                "SELECT * FROM PREGUNTA WHERE ID_GRUPO_EMP IN\n" +
+                        "(SELECT ID_GRUPO_EMP FROM GRUPO_EMPAREJAMIENTO WHERE ID_AREA IN\n" +
+                        "(SELECT ID_AREA FROM CLAVE_AREA WHERE ID_CLAVE="+id_clave+" AND ID_CLAVE_AREA IN\n" +
+                        "(SELECT ID_CLAVE_AREA FROM CLAVE_AREA_PREGUNTA WHERE ID_PREGUNTA="+id_pregunta+")))", null);
 
         peso = cursor.getInt(1);
 
@@ -145,7 +154,6 @@ public class IntentoConsultasDB {
             Cursor cursor = db.rawQuery("SELECT ID_CLAVE FROM CLAVE WHERE ID_ENCUESTA ="+id_encuesta, null);
             while (cursor.moveToNext()){
                 claves.add(cursor.getInt(0));
-                System.out.println("--------------hey 2");
             }
         } catch (Exception e) {
             Log.d("Database", "Ocurrio un error");

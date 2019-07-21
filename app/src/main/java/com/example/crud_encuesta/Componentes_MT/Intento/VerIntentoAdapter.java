@@ -36,8 +36,6 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
     private Activity activity;
     private int id_encuesta;
 
-    //private List<Integer> idesGPO = new ArrayList<>();
-
     public VerIntentoAdapter(List<PreguntaRevision> preguntas, int id_encuesta, List<Integer> idSP, List<String> opcionSP, Activity activity, Context context) {
         this.preguntas = preguntas;
         this.idSP = idSP;
@@ -47,7 +45,6 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
         this.id_encuesta = id_encuesta;
 
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-        System.out.println("-----------Tamaño---------"+preguntas.size());
     }
 
     @Override
@@ -77,7 +74,6 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
                         if(preguntas.get(position).eleccion==preguntas.get(position).respuesta){
                             rb_pregunta.setTextColor(Color.GREEN);
                         }else{
-                            System.out.println("id_encuesta-------"+id_encuesta);
                             if(id_encuesta!=0){
                                 rb_pregunta.setTextColor(Color.BLUE);
                             }
@@ -108,8 +104,12 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
                         if(preguntas.get(position).eleccion==preguntas.get(position).respuesta){
                             rb_pregunta.setTextColor(Color.GREEN);
                         }else{
-                            if(id_encuesta!=0) rb_pregunta.setTextColor(Color.BLUE);
-                            rb_pregunta.setTextColor(Color.RED);
+                            if(id_encuesta!=0){
+                                rb_pregunta.setTextColor(Color.BLUE);
+                            }
+                            else{
+                                rb_pregunta.setTextColor(Color.RED);
+                            }
                         }
                     }
 
@@ -120,7 +120,7 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
                 break;
 
             case 3:
-                txt_pregrunta.setText(preguntas.get(position).descripcion);
+                //txt_pregrunta.setText(preguntas.get(position).descripcion);
                 ArrayAdapter<String> comboAdapter;
 
                 TextView txt = new TextView(context);
@@ -144,8 +144,11 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
                         if(idSP.get(i)==preguntas.get(position).respuesta){
                             spGPO.setBackgroundColor(Color.GREEN);
                         }else{
-                            if(id_encuesta!=0) spGPO.setBackgroundColor(Color.BLUE);
-                            spGPO.setBackgroundColor(Color.RED);
+                            if(id_encuesta!=0){
+                                spGPO.setBackgroundColor(Color.BLUE);
+                            }else{
+                                spGPO.setBackgroundColor(Color.RED);
+                            }
                         }
                     }
                 }
@@ -170,8 +173,11 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
                 if(respuesta.equals(preguntas.get(position).texto_eleccion)){
                     et_respuesta.setTextColor(Color.GREEN);
                 }else{
-                    if(id_encuesta!=0) et_respuesta.setTextColor(Color.BLUE);
-                    et_respuesta.setTextColor(Color.RED);
+                    if(id_encuesta!=0){
+                        et_respuesta.setTextColor(Color.BLUE);
+                    }else{
+                        et_respuesta.setTextColor(Color.RED);
+                    }
                 }
 
                 et_respuesta.setEnabled(false);
@@ -187,8 +193,6 @@ public class VerIntentoAdapter extends BaseAdapter implements AdapterView.OnItem
         inicio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent i = new Intent(context, MainActivity.class);
-                //context.startActivity(i);
                 activity.finish();
             }
         });
