@@ -56,6 +56,8 @@ public class LoginActivity extends AppCompatActivity {
                 }else {
                     Toast.makeText(v.getContext(),getResources().getText(R.string.ap_usuario),Toast.LENGTH_SHORT).show();
                 }
+                /*Intent i = new Intent(LoginActivity.this, pruebaActivity.class);
+                startActivity(i);*/
             }
         });
 

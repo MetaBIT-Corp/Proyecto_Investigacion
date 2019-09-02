@@ -21,6 +21,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.crud_encuesta.Componentes_MT.finalizarIntentoWS.RespuestaWS;
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
 
@@ -308,6 +309,8 @@ public class IntentoActivity extends AppCompatActivity {
                 registro.put("id_intento", id_intento);
                 registro.put("id_pregunta", rg.getId());
                 db.insert("respuesta", null, registro);
+
+                RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento,"");
             }
         }
 
@@ -325,6 +328,8 @@ public class IntentoActivity extends AppCompatActivity {
                 registro.put("id_intento", id_intento);
                 registro.put("id_pregunta", rg.getId());
                 db.insert("respuesta", null, registro);
+
+                RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento,"");
             }
         }
 
@@ -336,6 +341,8 @@ public class IntentoActivity extends AppCompatActivity {
                     registro.put("id_intento", id_intento);
                     registro.put("id_pregunta", sp.getId());
                     db.insert("respuesta", null, registro);
+
+                    RespuestaWS respuestaWS = new RespuestaWS(this, idsSp.get(i).get(sp.getSelectedItemPosition()), sp.getId(), id_intento,"");
                 }
                 i++;
             }
@@ -349,6 +356,8 @@ public class IntentoActivity extends AppCompatActivity {
                 registro.put("id_pregunta", idPreguntaRC.get(i));
                 registro.put("texto_respuesta", et.getText().toString());
                 db.insert("respuesta", null, registro);
+
+                RespuestaWS respuestaWS = new RespuestaWS(this, et.getId(), idPreguntaRC.get(i), id_intento, et.getText().toString());
                 i++;
             }
         }
