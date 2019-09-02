@@ -51,11 +51,6 @@ public class IntentoConsultasDB {
         Cursor cursor = db.rawQuery(sentencia,null);
         cursor.moveToFirst();
 
-        /*Cursor cursor_emp = db.rawQuery("SELECT * FROM PREGUNTA WHERE ID_GRUPO_EMP IN\n" +
-                                            "(SELECT ID_GRUPO_EMP FROM GRUPO_EMPAREJAMIENTO WHERE ID_AREA IN\n" +
-                                            "(SELECT ID_AREA FROM AREA WHERE ID_TIPO_ITEM=3 AND ID_AREA IN\n" +
-                                            "(SELECT ID_AREA FROM CLAVE_AREA WHERE ID_CLAVE="+id_clave+")))", null);*/
-
         Cursor cursor_emp = db.rawQuery(
                 "SELECT * FROM PREGUNTA WHERE ID_GRUPO_EMP IN\n" +
                         "(SELECT ID_GRUPO_EMP FROM GRUPO_EMPAREJAMIENTO WHERE ID_AREA IN\n" +

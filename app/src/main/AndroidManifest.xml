@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.crud_encuesta">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.crud_encuesta">
     <!-- Permiso para speech -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Componentes_MT.EncuestaWS.EncuestaActivityWS"></activity>
         <activity android:name=".Estadisticas.EstadisticaActivity" />
         <activity android:name=".SubMenuEncuestaActivity" />
         <activity
@@ -24,10 +24,10 @@
         <activity android:name=".Componentes_AP.Activities.PensumActivity" />
         <activity
             android:name=".Componentes_MT.Intento.VerIntentoActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Componentes_MT.Intento.IntentoActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Componentes_MT.ClaveArea.VerAreasActivity"
             android:label="ClaveArea" />
@@ -44,7 +44,7 @@
             android:label="@string/mt_clave" />
         <activity
             android:name=".Componentes_AP.Activities.TurnoActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity android:name=".Componentes_AP.Activities.EvaluacionActivity" />
         <activity android:name=".Componentes_AP.Activities.LoginActivity">
             <intent-filter>
