@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +26,21 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.crud_encuesta.Componentes_AP.DAO.DAOTurno;
 import com.example.crud_encuesta.Componentes_AP.DAO.DAOUsuario;
 import com.example.crud_encuesta.Componentes_AP.Models.Turno;
 import com.example.crud_encuesta.Componentes_AP.Models.Usuario;
 import com.example.crud_encuesta.Componentes_MT.Clave.ClaveActivity;
 import com.example.crud_encuesta.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -110,6 +121,7 @@ public class AdapterTurno extends BaseAdapter {
         ImageView eliminar = (ImageView) view.findViewById(R.id.ap_eliminar_item);
         ImageView info = (ImageView) view.findViewById(R.id.ap_info_item);
         ImageView turnoi = (ImageView) view.findViewById(R.id.ap_turno_item);
+        ImageView descargar = (ImageView) view.findViewById(R.id.btn_descargar);
 
         String fechainicial = turno.getDateInicial();
         String[] pfechainicial = fechainicial.split(" ");
@@ -136,6 +148,41 @@ public class AdapterTurno extends BaseAdapter {
         info.setTag(position);
         turnoi.setTag(position);
 
+        descargar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(activity, "Descargando...", Toast.LENGTH_LONG).show();
+
+
+                RequestQueue request;
+                JsonObjectRequest jsonObjectRequest;
+
+                request = Volley.newRequestQueue(v.getContext());
+                String url = "http://192.168.0.12:8000/api/evaluacion/turno/1/obtener/1";
+
+
+                jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("Exito", "Al descargar");
+                        /*try {
+
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }*/
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error", ""+error.toString());
+                    }
+                });
+
+                request.add(jsonObjectRequest);
+
+            }
+        });
 
         //TODO: OnCLICKLISTENER DE OPCIONES
         //inicio de listener editar

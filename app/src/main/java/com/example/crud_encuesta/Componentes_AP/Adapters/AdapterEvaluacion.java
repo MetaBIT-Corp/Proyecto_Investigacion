@@ -103,7 +103,8 @@ public class AdapterEvaluacion extends BaseAdapter {
         ImageView eliminar = (ImageView) view.findViewById(R.id.ap_eliminar_item);
         ImageView info = (ImageView) view.findViewById(R.id.ap_info_item);
         ImageView turnoi = (ImageView) view.findViewById(R.id.ap_turno_item);
-
+        ImageView descargar = (ImageView) view.findViewById(R.id.btn_descargar);
+        descargar.setVisibility(View.INVISIBLE);
         tv_item.setText(evaluacion.getNombre());
 
         //ocultados de acuerdo a rol
