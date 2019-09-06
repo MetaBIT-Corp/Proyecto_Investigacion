@@ -28,6 +28,7 @@ import com.example.crud_encuesta.Componentes_EL.Materia.MateriaUsersActivity;
 import com.example.crud_encuesta.Componentes_MR.Estudiante.ActivityEstudiante;
 import com.example.crud_encuesta.Componentes_MT.Area.AreaActivity;
 import com.example.crud_encuesta.Componentes_MT.Clave.ClaveActivity;
+import com.example.crud_encuesta.Componentes_MT.EncuestaWS.EncuestaActivityWS;
 import com.example.crud_encuesta.Componentes_MT.Intento.IntentoActivity;
 import com.example.crud_encuesta.Componentes_EL.Carrera.CarreraActivity;
 import com.example.crud_encuesta.Componentes_AP.Activities.LoginActivity;
@@ -179,7 +180,8 @@ public class MainActivity extends AppCompatActivity {
         encuesta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, EncuestaActivity.class);
+                //Intent i = new Intent(MainActivity.this, EncuestaActivity.class);
+                Intent i = new Intent(MainActivity.this, EncuestaActivityWS.class);
                 i.putExtra("rol_user", rol);
                 i.putExtra("id_user", id);
                 startActivity(i);

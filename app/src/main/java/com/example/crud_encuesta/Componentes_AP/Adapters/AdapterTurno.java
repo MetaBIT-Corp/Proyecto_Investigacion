@@ -4,15 +4,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,32 +23,21 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.crud_encuesta.Componentes_AP.DAO.DAOTurno;
 import com.example.crud_encuesta.Componentes_AP.DAO.DAOUsuario;
 import com.example.crud_encuesta.Componentes_AP.Models.Turno;
 import com.example.crud_encuesta.Componentes_AP.Models.Usuario;
-import com.example.crud_encuesta.Componentes_DC.Dao.DaoOpcion;
+import com.example.crud_encuesta.Componentes_DC.WebServices.Descargar;
 import com.example.crud_encuesta.Componentes_MT.Clave.ClaveActivity;
-import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 public class AdapterTurno extends BaseAdapter {
     private int anio, mes, dia, hora, minuto;
-    private SQLiteDatabase cx;
-    private DatabaseAccess dba;
+
+    private Descargar descargar_ws;
 
     ArrayList<Turno> turnos = new ArrayList<>();
     Turno turno;
@@ -73,8 +57,6 @@ public class AdapterTurno extends BaseAdapter {
         this.daoTurno = daoTurno;
         this.activity = activity;
         this.context = context;
-        this.dba = DatabaseAccess.getInstance(this.context);
-        //cx = dba.open();
 
     }
 
@@ -162,167 +144,12 @@ public class AdapterTurno extends BaseAdapter {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(activity, "Descargando...", Toast.LENGTH_LONG).show();
-                cx = dba.open();
+                descargar_ws = new Descargar(context);
+                int turno_id = 1;
+                int estudiante_id = 1;
+                //Pasar params reales
+                descargar_ws.descargar_turno(turno_id, estudiante_id);
 
-                RequestQueue request;
-                JsonObjectRequest jsonObjectRequest;
-
-                request = Volley.newRequestQueue(v.getContext());
-                String url = "http://192.168.0.12:8000/api/evaluacion/turno/1/obtener/1";
-
-
-                jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        try {
-                            //Se procede a obtener la clave y almacenarla
-                            JSONObject clave = response.getJSONObject("clave");
-
-                            Log.d("Clave",""+clave.getInt("id"));
-
-                            ContentValues contenedor_clave = new ContentValues();
-                            contenedor_clave.put("ID_CLAVE", clave.getInt("id"));
-                            contenedor_clave.put("ID_TURNO", clave.getInt("turno_id"));
-                            contenedor_clave.put("ID_ENCUESTA", 1/*clave.getInt("encuesta_id")*/);
-                            contenedor_clave.put("NUMERO_CLAVE", clave.getInt("numero_clave"));
-
-                            cx.insert("CLAVE",null,contenedor_clave);
-
-                            //Se procede a obtener el intento y almacenarlo
-                            JSONObject intento = response.getJSONObject("intento");
-
-                            Log.d("Intento",""+intento.getInt("id"));
-
-                            ContentValues contenedor_intento = new ContentValues();
-                            contenedor_intento.put("ID_INTENTO", intento.getInt("id"));
-                            contenedor_intento.put("ID_EST", intento.getInt("estudiante_id"));
-                            contenedor_intento.put("ID_CLAVE", intento.getInt("clave_id"));
-                            contenedor_intento.put("ID", ""/*intento.getString("")*/);
-                            contenedor_intento.put("FECHA_INICIO_INTENTO", intento.getString("fecha_inicio_intento"));
-
-                            cx.insert("INTENTO",null,contenedor_intento);
-
-                            //Se procede a obtener las clave_areas, recorerlas y almacenarlas
-                            JSONArray clave_areas = response.getJSONArray("clave_areas");
-                            for (int i = 0; i < clave_areas.length(); i++) {
-
-                                JSONObject clave_area = clave_areas.getJSONObject(i);
-
-                                Log.d("Clave_Area",""+clave_area.getInt("id"));
-
-                                ContentValues contenedor_clave_area = new ContentValues();
-                                contenedor_clave_area.put("ID_CLAVE_AREA", clave_area.getInt("id"));
-                                contenedor_clave_area.put("ID_AREA", clave_area.getInt("area_id"));
-                                contenedor_clave_area.put("ID_CLAVE", clave_area.getInt("clave_id"));
-                                contenedor_clave_area.put("NUMERO_PREGUNTAS", clave_area.getInt("numero_preguntas"));
-                                contenedor_clave_area.put("ALEATORIO", clave_area.getInt("aleatorio"));
-                                contenedor_clave_area.put("PESO", clave_area.getInt("peso"));
-
-                                cx.insert("CLAVE_AREA",null,contenedor_clave_area);
-                            }
-
-                            //Se procede a obtener las areas, recorerlas y almacenarlas
-                            JSONArray areas = response.getJSONArray("areas");
-                            for (int i = 0; i < areas.length(); i++) {
-
-                                JSONObject area = areas.getJSONObject(i);
-
-                                Log.d("Area",""+area.getInt("id"));
-
-                                ContentValues contenedor_area = new ContentValues();
-                                contenedor_area.put("ID_AREA", area.getInt("id"));
-                                contenedor_area.put("ID_CAT_MAT", area.getInt("id_cat_mat"));
-                                contenedor_area.put("ID_PDG_DCN", area.getInt("id_pdg_dcn"));
-                                contenedor_area.put("ID_TIPO_ITEM", area.getInt("tipo_item_id"));
-                                contenedor_area.put("TITULO", area.getString("titulo"));
-
-                                cx.insert("AREA",null,contenedor_area);
-                            }
-
-                            //Se procede a obtener las clave_area_preguntas, recorerlas y almacenarlas
-                            JSONArray clave_area_preguntas = response.getJSONArray("clave_area_preguntas");
-                            for (int i = 0; i < clave_area_preguntas.length(); i++) {
-
-                                JSONObject clave_area_pregunta = clave_area_preguntas.getJSONObject(i);
-
-                                Log.d("Clave_Area_Pregunta",""+clave_area_pregunta.getInt("id"));
-
-                                ContentValues contenedor_clave_area_pregunta = new ContentValues();
-                                contenedor_clave_area_pregunta.put("ID_CLAVE_AREA_PRE", clave_area_pregunta.getInt("id"));
-                                contenedor_clave_area_pregunta.put("ID_PREGUNTA", clave_area_pregunta.getInt("pregunta_id"));
-                                contenedor_clave_area_pregunta.put("ID_CLAVE_AREA", clave_area_pregunta.getInt("clave_area_id"));
-
-                                cx.insert("CLAVE_AREA_PREGUNTA",null,contenedor_clave_area_pregunta);
-
-                            }
-
-                            //Se procede a obtener los grupos de emparejamiento, recorerlos y almacenarlos
-                            JSONArray grupos_emp = response.getJSONArray("grupos_emp");
-                            for (int i = 0; i < grupos_emp.length(); i++) {
-
-                                JSONObject grupo_emp = grupos_emp.getJSONObject(i);
-
-                                Log.d("Grupo_Emp",""+grupo_emp.getInt("id"));
-
-                                ContentValues contenedor_grupo_emp = new ContentValues();
-                                contenedor_grupo_emp.put("ID_GRUPO_EMP", grupo_emp.getInt("id"));
-                                contenedor_grupo_emp.put("ID_AREA", grupo_emp.getInt("area_id"));
-                                contenedor_grupo_emp.put("DESCRIPCION_GRUPO_EMP", grupo_emp.getString("descripcion_grupo_emp"));
-
-                                cx.insert("GRUPO_EMPAREJAMIENTO",null,contenedor_grupo_emp);
-                            }
-
-                            //Se procede a obtener las preguntas, recorerlas y almacenarlas
-                            JSONArray preguntas = response.getJSONArray("preguntas");
-                            for (int i = 0; i < preguntas.length(); i++) {
-
-                                JSONObject pregunta = preguntas.getJSONObject(i);
-
-                                Log.d("Preguntas",""+pregunta.getInt("id"));
-
-                                ContentValues contenedor_pregunta = new ContentValues();
-                                contenedor_pregunta.put("ID_PREGUNTA", pregunta.getInt("id"));
-                                contenedor_pregunta.put("ID_GRUPO_EMP", pregunta.getInt("grupo_emparejamiento_id"));
-                                contenedor_pregunta.put("PREGUNTA", pregunta.getString("pregunta"));
-
-                                cx.insert("PREGUNTA",null,contenedor_pregunta);
-                            }
-
-                            //Se procede a obtener las opciones, recorerlas y almacenarlas
-                            JSONArray opciones = response.getJSONArray("opciones");
-                            for (int i = 0; i < opciones.length(); i++) {
-
-                                JSONObject opcion = opciones.getJSONObject(i);
-
-                                Log.d("Opciones",""+opcion.getInt("id"));
-
-                                ContentValues contenedor_opcion = new ContentValues();
-                                contenedor_opcion.put("ID_OPCION", opcion.getInt("id"));
-                                contenedor_opcion.put("ID_PREGUNTA", opcion.getInt("pregunta_id"));
-                                contenedor_opcion.put("OPCION", opcion.getString("opcion"));
-                                contenedor_opcion.put("CORRECTA", opcion.getInt("correcta"));
-
-                                cx.insert("OPCION",null,contenedor_opcion);
-
-                            }
-                            dba.close();
-                            Log.d("Exito", "Se almaceno de manera correcta la evaluación");
-
-                        }catch (JSONException e){
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("Error", ""+error.toString());
-                    }
-                });
-
-                request.add(jsonObjectRequest);
             }
         });
 

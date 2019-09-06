@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.crud_encuesta.Componentes_DC.WebServices.Descargar;
 import com.example.crud_encuesta.R;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
 public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItemSelectedListener{
     private LayoutInflater inflater = null;
     private Context context;
+    private Descargar descargar_ws;
 
     private int pos_area;
     private List<EncuestaWS> encuestasWS= new ArrayList<>();
@@ -38,7 +40,7 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
 
         TextView txt_titulo = mView.findViewById(R.id.txt_titulo_ws);
         ImageView informacion = mView.findViewById(R.id.img_info_ws);
-        ImageView descargar = mView.findViewById(R.id.img_download_ws);
+        final ImageView descargar = mView.findViewById(R.id.img_download_ws);
 
         txt_titulo.setText(encuestasWS.get(i).getTitulo_encuesta());
 
@@ -58,8 +60,10 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
 
             @Override
             public void onClick(View view) {
-                final int id_seleccion = encuestasWS.get(Integer.parseInt(view.getTag().toString())).id;
-                Toast.makeText(context, "encuesta_id: "+id_seleccion+", Este método está vacio", Toast.LENGTH_SHORT).show();
+                final int id_encuesta_seleccion = encuestasWS.get(Integer.parseInt(view.getTag().toString())).id;
+                descargar_ws = new Descargar(context);
+                descargar_ws.descargar_encuesta(id_encuesta_seleccion);
+                //Toast.makeText(context, "encuesta_id: "+id_encuesta_seleccion+", Este método está vacio", Toast.LENGTH_SHORT).show();
 
             }
         });
