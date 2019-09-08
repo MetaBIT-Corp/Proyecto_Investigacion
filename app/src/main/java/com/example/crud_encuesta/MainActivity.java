@@ -180,8 +180,8 @@ public class MainActivity extends AppCompatActivity {
         encuesta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent i = new Intent(MainActivity.this, EncuestaActivity.class);
-                Intent i = new Intent(MainActivity.this, EncuestaActivityWS.class);
+                Intent i = new Intent(MainActivity.this, EncuestaActivity.class);
+                //Intent i = new Intent(MainActivity.this, EncuestaActivityWS.class);
                 i.putExtra("rol_user", rol);
                 i.putExtra("id_user", id);
                 startActivity(i);
