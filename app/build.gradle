@@ -47,4 +47,5 @@ dependencies {
 
     //Agregando libreria Android MPChart
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'org.jetbrains:annotations-java5:15.0'
 }

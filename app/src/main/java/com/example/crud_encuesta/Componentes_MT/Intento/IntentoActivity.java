@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.crud_encuesta.Componentes_MT.finalizarIntentoWS.RespuestaWS;
 import com.example.crud_encuesta.DatabaseAccess;
@@ -47,6 +48,7 @@ public class IntentoActivity extends AppCompatActivity {
     private int id_encuesta;
     private int id_estudiante;
     int indice =0;
+    boolean acceso_internet;
     List<Pregunta> preguntas = new ArrayList<>();
     List<ModalidadPregunta> modalidadPreguntas = new ArrayList<>();
     LinearLayout ll_principal;
@@ -294,8 +296,10 @@ public class IntentoActivity extends AppCompatActivity {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         SQLiteDatabase db = databaseAccess.open();
         ContentValues registro = new ContentValues();
+        int total_preguntas = 0;
 
         if(rg_seleccion !=null || rg_seleccion.size()>0){
+            total_preguntas += rg_seleccion.size();
             for (RadioGroup rg : rg_seleccion) {
                 int id_seleccion;
 
@@ -310,11 +314,14 @@ public class IntentoActivity extends AppCompatActivity {
                 registro.put("id_pregunta", rg.getId());
                 db.insert("respuesta", null, registro);
 
-                RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento,"");
+                if(acceso_internet){
+                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "");
+                }
             }
         }
 
         if(rg_seleccion_vf !=null || rg_seleccion_vf.size()>0){
+            total_preguntas += rg_seleccion_vf.size();
             for (RadioGroup rg : rg_seleccion_vf) {
                 int id_seleccion;
 
@@ -329,27 +336,33 @@ public class IntentoActivity extends AppCompatActivity {
                 registro.put("id_pregunta", rg.getId());
                 db.insert("respuesta", null, registro);
 
-                RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento,"");
+                if(acceso_internet) {
+                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "");
+                }
             }
         }
 
         if(sp_seleccion_a !=null || sp_seleccion_a.size()>0){
             int i=0;
             for (ArrayList<Spinner> sp_a : sp_seleccion_a) {
+                total_preguntas += sp_seleccion_a.size();
                 for(Spinner sp: sp_a){
                     registro.put("id_opcion", idsSp.get(i).get(sp.getSelectedItemPosition()));
                     registro.put("id_intento", id_intento);
                     registro.put("id_pregunta", sp.getId());
                     db.insert("respuesta", null, registro);
 
-                    RespuestaWS respuestaWS = new RespuestaWS(this, idsSp.get(i).get(sp.getSelectedItemPosition()), sp.getId(), id_intento,"");
+                    if(acceso_internet){
+                        RespuestaWS respuestaWS = new RespuestaWS(this, idsSp.get(i).get(sp.getSelectedItemPosition()), sp.getId(), id_intento, total_preguntas, "");
+                    }
                 }
-                i++;
+                    i++;
             }
         }
 
         if(et_seleccion !=null || et_seleccion.size()>0){
             int i =0;
+            total_preguntas += et_seleccion.size();
             for (EditText et : et_seleccion) {
                 registro.put("id_opcion", et.getId());
                 registro.put("id_intento", id_intento);
@@ -357,7 +370,9 @@ public class IntentoActivity extends AppCompatActivity {
                 registro.put("texto_respuesta", et.getText().toString());
                 db.insert("respuesta", null, registro);
 
-                RespuestaWS respuestaWS = new RespuestaWS(this, et.getId(), idPreguntaRC.get(i), id_intento, et.getText().toString());
+                if(acceso_internet){
+                    RespuestaWS respuestaWS = new RespuestaWS(this, et.getId(), idPreguntaRC.get(i), id_intento, total_preguntas, et.getText().toString());
+                }
                 i++;
             }
         }
@@ -365,6 +380,7 @@ public class IntentoActivity extends AppCompatActivity {
     }
 
     public void terminar_intento() {
+        acceso_internet = accesoInternet();
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         SQLiteDatabase db = databaseAccess.open();
 
@@ -374,6 +390,16 @@ public class IntentoActivity extends AppCompatActivity {
         reg.put("nota_intento", calcular_nota());
 
         if(sumIntento) reg.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
+
+        if(accesoInternet()){
+            reg.put("subido", 1);
+            Toast.makeText(this, "La evaluación fue subida con éxito", Toast.LENGTH_SHORT).show();
+        }else{
+            reg.put("subido", 0);
+            Toast.makeText(this,
+                    "No tienes conexión a internet para subir la evaluación, intenta nuevamente cuanto tengas conexión a internet",
+                    Toast.LENGTH_SHORT).show();
+        }
 
         db.update("intento", reg, "id_intento=" + id_intento, null);
 
@@ -565,7 +591,6 @@ public class IntentoActivity extends AppCompatActivity {
                     });
                     nota.show();
                 }
-
             }
         });
 
@@ -593,6 +618,20 @@ public class IntentoActivity extends AppCompatActivity {
         }
 
         return duracion;
+    }
+
+    public boolean accesoInternet(){
+        try {
+            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
+
+            int val = p.waitFor();
+            boolean accesible = (val == 0);
+            return accesible;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 

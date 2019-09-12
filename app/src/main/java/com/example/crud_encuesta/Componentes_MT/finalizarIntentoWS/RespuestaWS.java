@@ -18,14 +18,16 @@ public class RespuestaWS {
     int opcion_id;
     int pregunta_id;
     int intento_id;
+    int total_preguntas;
     String texto_respuesta ="";
     private String URLline = "http://192.168.1.3:8000/api/finalizar-intento";
 
-    public RespuestaWS(Context context, int opcion_id, int pregunta_id, int intento_id, String texto_respuesta){
+    public RespuestaWS(Context context, int opcion_id, int pregunta_id, int intento_id, int total_preguntas, String texto_respuesta){
         this.context = context;
         this.opcion_id = opcion_id;
         this.pregunta_id = pregunta_id;
         this.intento_id = intento_id;
+        this.total_preguntas = total_preguntas;
         this.texto_respuesta = texto_respuesta;
 
         respuesta();
@@ -54,6 +56,7 @@ public class RespuestaWS {
                 params.put("opcion_id", String.valueOf(opcion_id));
                 params.put("intento_id", String.valueOf(intento_id));
                 params.put("texto_respuesta",texto_respuesta);
+                params.put("total_preguntas", String.valueOf(total_preguntas));
 
                 return params;
             }

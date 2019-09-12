@@ -15,7 +15,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.crud_encuesta.Componentes_MT.finalizarIntentoWS.EvaluacionesPorSubirActivity;
 import com.example.crud_encuesta.R;
 import com.example.crud_encuesta.SubMenuMateriaActivity;
 
@@ -79,8 +81,10 @@ public class MateriaUserAdapter extends BaseAdapter {
         Button btneditar = view.findViewById(R.id.btn_editar);
         Button btneliminar = view.findViewById(R.id.btn_eliminar);
         Button btninfo=view.findViewById(R.id.btn_infor);
+        Button btnSync=view.findViewById(R.id.btn_sync);
         final TextView textView = view.findViewById(R.id.txt_escuela_item);
 
+        btnSync.setVisibility(View.VISIBLE);
         textView.setText(l.get(position).toString());
 
         btneditar.setVisibility(View.GONE);
@@ -127,6 +131,18 @@ public class MateriaUserAdapter extends BaseAdapter {
                 d.show();
             }
             });
+
+        btnSync.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Soy una prueba"+getItemId(position), Toast.LENGTH_SHORT).show();
+                final int id = (int) getItemId(position);
+                Intent i = new Intent(context, EvaluacionesPorSubirActivity.class);
+                i.putExtra("materia_id", id);
+                context.startActivity(i);
+            }
+        });
 
         return view;
     }

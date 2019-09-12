@@ -22,6 +22,7 @@ import com.example.crud_encuesta.Componentes_EL.Escuela.Escuela;
 import com.example.crud_encuesta.Componentes_EL.EstructuraTablas;
 import com.example.crud_encuesta.Componentes_EL.Operaciones_CRUD;
 import com.example.crud_encuesta.Componentes_EL.ModelosAdicionales.Pensum;
+import com.example.crud_encuesta.Componentes_MT.finalizarIntentoWS.EvaluacionesPorSubir;
 import com.example.crud_encuesta.R;
 import com.example.crud_encuesta.SubMenuMateriaActivity;
 
