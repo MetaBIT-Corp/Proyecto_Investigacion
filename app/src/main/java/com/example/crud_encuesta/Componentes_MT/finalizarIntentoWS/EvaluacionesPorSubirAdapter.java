@@ -49,7 +49,7 @@ public class EvaluacionesPorSubirAdapter  extends BaseAdapter implements Adapter
                 if(accesoInternet()){
                     subirEvaluacion(intento_id);
                 }else{
-                    Toast.makeText(context, "Error, no hay conexión a intenrnet "+intento_id, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Error, no hay conexión a intenrnet ", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -96,11 +96,16 @@ public class EvaluacionesPorSubirAdapter  extends BaseAdapter implements Adapter
             total = cursor_respuesta.getCount();
 
             while(cursor_respuesta.moveToNext()){
-                id_opcion = cursor_respuesta.getInt(0);
-                id_pregunta = cursor_respuesta.getInt(2);
-                txt_respuesta = cursor_respuesta.getString(3);
+                id_opcion = cursor_respuesta.getInt(1);
+                id_pregunta = cursor_respuesta.getInt(3);
+                txt_respuesta = cursor_respuesta.getString(4);
+
+                if(txt_respuesta==null)txt_respuesta="";
                 RespuestaWS respuestaWS = new RespuestaWS(context, id_opcion, id_pregunta, intento_id, total, txt_respuesta);
             }
+            Toast.makeText(context, "La evaluación fue subida con éxito", Toast.LENGTH_SHORT).show();
+            contenedor.put("SUBIDO",1);
+            db.update("INTENTO", contenedor, "ID_INTENTO="+intento_id, null);
             db.close();
         }catch (Exception e){
             e.printStackTrace();

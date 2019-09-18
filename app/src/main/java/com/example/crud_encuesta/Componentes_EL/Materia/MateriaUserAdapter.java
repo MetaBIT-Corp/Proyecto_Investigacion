@@ -136,7 +136,6 @@ public class MateriaUserAdapter extends BaseAdapter {
 
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "Soy una prueba"+getItemId(position), Toast.LENGTH_SHORT).show();
                 final int id = (int) getItemId(position);
                 Intent i = new Intent(context, EvaluacionesPorSubirActivity.class);
                 i.putExtra("materia_id", id);

@@ -277,18 +277,23 @@ public class IntentoActivity extends AppCompatActivity {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         SQLiteDatabase db = databaseAccess.open();
 
-        ContentValues registro = new ContentValues();
-        registro.put("id_est", id_estudiante);
-        registro.put("id_clave", id_clave);
-        registro.put("id", id_encuesta);
-        registro.put("fecha_inicio_intento", fecha_actual());
-        registro.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
+        try{
+            ContentValues registro = new ContentValues();
+            registro.put("id_est", id_estudiante);
+            registro.put("id_clave", id_clave);
+            registro.put("id", id_encuesta);
+            registro.put("fecha_inicio_intento", fecha_actual());
+            registro.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
 
-        db.insert("intento", null, registro);
-        Cursor cursor = db.rawQuery("SELECT ID_INTENTO FROM INTENTO ORDER BY ID_INTENTO DESC LIMIT 1", null);
-        cursor.moveToFirst();
+            db.insert("intento", null, registro);
+            Cursor cursor = db.rawQuery("SELECT ID_INTENTO FROM INTENTO ORDER BY ID_INTENTO DESC LIMIT 1", null);
+            cursor.moveToFirst();
 
-        id_intento = cursor.getInt(0);
+            id_intento = cursor.getInt(0);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -345,8 +350,10 @@ public class IntentoActivity extends AppCompatActivity {
         if(sp_seleccion_a !=null || sp_seleccion_a.size()>0){
             int i=0;
             for (ArrayList<Spinner> sp_a : sp_seleccion_a) {
-                total_preguntas += sp_seleccion_a.size();
+                //total_preguntas += sp_seleccion_a.size();
+
                 for(Spinner sp: sp_a){
+                    total_preguntas++;
                     registro.put("id_opcion", idsSp.get(i).get(sp.getSelectedItemPosition()));
                     registro.put("id_intento", id_intento);
                     registro.put("id_pregunta", sp.getId());
@@ -396,9 +403,19 @@ public class IntentoActivity extends AppCompatActivity {
             Toast.makeText(this, "La evaluación fue subida con éxito", Toast.LENGTH_SHORT).show();
         }else{
             reg.put("subido", 0);
-            Toast.makeText(this,
-                    "No tienes conexión a internet para subir la evaluación, intenta nuevamente cuanto tengas conexión a internet",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No tienes conexión a internet para subir la evaluación, intenta nuevamente cuanto tengas conexión a internet", Toast.LENGTH_SHORT).show();
+            /*AlertDialog.Builder mensaje = new AlertDialog.Builder(IntentoActivity.this);
+            mensaje.setTitle("Advertencia");
+            //mensaje.setIcon(R.drawable.warning);
+            mensaje.setMessage("No tienes conexión a internet para subir la evaluación, intenta nuevamente cuanto tengas conexión a internet");
+            mensaje.setPositiveButton("Aceptar", new DialogInterface.OnClickListener(){
+
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+            mensaje.show();*/
         }
 
         db.update("intento", reg, "id_intento=" + id_intento, null);
@@ -555,8 +572,8 @@ public class IntentoActivity extends AppCompatActivity {
         emergente.setPositiveButton(R.string.mt_finalizar, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                modelo_respuesta(rg_lista, preguntasSP, et_lista, rg_lista_vf);
                 terminar_intento();
+                modelo_respuesta(rg_lista, preguntasSP, et_lista, rg_lista_vf);
                 if(id_encuesta==0) countDownTimer.cancel();
 
                 AlertDialog.Builder nota = new AlertDialog.Builder(IntentoActivity.this);

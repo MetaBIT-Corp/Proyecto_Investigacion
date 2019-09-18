@@ -39,7 +39,8 @@ public class RespuestaWS {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(context,"Se insertó con éxito",Toast.LENGTH_LONG).show();
+                        //Toast.makeText(context,"Se insertó con éxito",Toast.LENGTH_LONG).show();
+                        System.out.println(response);
 
                     }
                 },
