@@ -281,7 +281,7 @@ public class IntentoActivity extends AppCompatActivity {
             ContentValues registro = new ContentValues();
             registro.put("id_est", id_estudiante);
             registro.put("id_clave", id_clave);
-            registro.put("id", id_encuesta);
+            registro.put("id_encuestado", id_encuesta);
             registro.put("fecha_inicio_intento", fecha_actual());
             registro.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
 
@@ -403,7 +403,7 @@ public class IntentoActivity extends AppCompatActivity {
             Toast.makeText(this, "La evaluación fue subida con éxito", Toast.LENGTH_SHORT).show();
         }else{
             reg.put("subido", 0);
-            Toast.makeText(this, "No tienes conexión a internet para subir la evaluación, intenta nuevamente cuanto tengas conexión a internet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No tienes conexión a internet para subir la evaluación, intenta nuevamente cuanto tengas conexión a internet", Toast.LENGTH_LONG).show();
             /*AlertDialog.Builder mensaje = new AlertDialog.Builder(IntentoActivity.this);
             mensaje.setTitle("Advertencia");
             //mensaje.setIcon(R.drawable.warning);

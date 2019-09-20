@@ -2,6 +2,7 @@ package com.example.crud_encuesta.Componentes_MT.EncuestaWS;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.crud_encuesta.Componentes_DC.WebServices.Descargar;
+import com.example.crud_encuesta.Componentes_MT.Intento.IntentoActivity;
 import com.example.crud_encuesta.R;
+import com.example.crud_encuesta.SubMenuEncuestaActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +35,14 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
         this.encuestasWS = encuestasWS;
 
         inflater = (LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+
+        if(getCount()<1){
+            Toast.makeText(context, "No hay encuestas disponibles", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, ViewGroup viewGroup) {
         View mView = inflater.inflate(R.layout.item_list_encuestas_ws, null);
 
         TextView txt_titulo = mView.findViewById(R.id.txt_titulo_ws);
@@ -63,8 +70,18 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
                 final int id_encuesta_seleccion = encuestasWS.get(Integer.parseInt(view.getTag().toString())).id;
                 descargar_ws = new Descargar(context);
                 descargar_ws.descargar_encuesta(id_encuesta_seleccion);
-                //Toast.makeText(context, "encuesta_id: "+id_encuesta_seleccion+", Este método está vacio", Toast.LENGTH_SHORT).show();
 
+            }
+        });
+
+        mView.setOnClickListener(new View.OnClickListener(){
+
+
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(context, IntentoActivity.class);
+                intent.putExtra("id_encuesta",getItemId(i));
+                context.startActivity(intent);
             }
         });
 
@@ -78,12 +95,12 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return encuestasWS.get(i);
     }
 
     @Override
     public long getItemId(int i) {
-        return 0;
+        return encuestasWS.get(i).getId();
     }
 
     @Override

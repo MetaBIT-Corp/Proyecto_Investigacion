@@ -77,7 +77,7 @@ public class EncuestaActivityWS extends AppCompatActivity implements Response.Li
     }
 
     public void getEncuestasVigentes(){
-        String url = "http://192.168.0.10:8000/api/encuestas-disponibles";
+        String url = "http://sigen.herokuapp.com/api/encuestas-disponibles";
 
         jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, this, this);
         requestQueue.add(jsonObjectRequest);

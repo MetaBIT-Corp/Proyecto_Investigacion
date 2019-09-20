@@ -29,6 +29,10 @@ public class EvaluacionesPorSubirAdapter  extends BaseAdapter implements Adapter
         this.evaluaciones = evaluaciones;
 
         inflater = (LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+
+        if(getCount()<1){
+            Toast.makeText(context, "No hay evaluaciones pendientes por subir", Toast.LENGTH_SHORT).show();
+        }
     }
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {

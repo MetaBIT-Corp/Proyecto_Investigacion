@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        encuesta.setOnClickListener(new View.OnClickListener() {
+        /*encuesta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, EncuestaActivity.class);
@@ -186,7 +186,16 @@ public class MainActivity extends AppCompatActivity {
                 i.putExtra("id_user", id);
                 startActivity(i);
             }
+        });*/
+
+        encuesta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, EncuestaActivityWS.class);
+                startActivity(i);
+            }
         });
+
         escuela.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
