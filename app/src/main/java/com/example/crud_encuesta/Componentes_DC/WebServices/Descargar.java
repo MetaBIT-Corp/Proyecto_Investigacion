@@ -1,5 +1,6 @@
 package com.example.crud_encuesta.Componentes_DC.WebServices;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,26 +22,39 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
+
 public class Descargar {
 
     private Context context;
     private SQLiteDatabase cx;
     private DatabaseAccess dba;
+    private ProgressDialog progressDialog;
+    private String url_base = "http://192.168.0.15:8000/api";
 
     public Descargar(Context context){
         this.context = context;
         dba = DatabaseAccess.getInstance(context);
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("Descargando...");
     }
 
     public void descargar_turno(int turno_id, int estudiante_id){
-        Toast.makeText(context, "Descargando...", Toast.LENGTH_LONG).show();
+        //Se procede a verificar que el usuario tenga acceso a Internet
+        //En caso de no tener acceso, se cancela la operación de descarga
+        if (! isInternetAvailable()){
+            Toast.makeText(context, "No hay acceso a Internet.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        progressDialog.show();
         cx = dba.open();
 
         RequestQueue request;
         JsonObjectRequest jsonObjectRequest;
 
         request = Volley.newRequestQueue(context);
-        String url = "http://192.168.0.10:8000/api/evaluacion/turno/"+turno_id+"/obtener/"+estudiante_id;
+        String url = url_base + "/evaluacion/turno/" + turno_id + "/obtener/" +estudiante_id;
 
 
         jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -161,8 +175,8 @@ public class Descargar {
 
                     }
                     dba.close();
-
-                    Toast.makeText(context, "Exito! Se almaceno de manera correcta la Evaluación.", Toast.LENGTH_SHORT).show();
+                    progressDialog.hide();
+                    Toast.makeText(context, "¡Exito: Se almaceno de manera correcta la Evaluación!", Toast.LENGTH_SHORT).show();
 
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -173,7 +187,8 @@ public class Descargar {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Error", ""+error.getMessage());
+                progressDialog.hide();
+                Toast.makeText(context, "Hubo un error en el proceso de descarga, intentalo de nuevo más tarde.", Toast.LENGTH_LONG).show();
                 dba.close();
             }
         });
@@ -182,18 +197,25 @@ public class Descargar {
     }
 
     public void descargar_encuesta(int encuesta_id){
+        //Se procede a verificar que el usuario tenga acceso a Internet
+        //En caso de no tener acceso, se cancela la operación de descarga
+        if (! isInternetAvailable()){
+            Toast.makeText(context, "No hay acceso a Internet.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo info = manager.getConnectionInfo();
         String address = info.getMacAddress();
 
-        Toast.makeText(context, "Descargando...", Toast.LENGTH_LONG).show();
+        progressDialog.show();
         cx = dba.open();
 
         RequestQueue request;
         JsonObjectRequest jsonObjectRequest;
 
         request = Volley.newRequestQueue(context);
-        String url = "http://192.168.0.10:8000/api/encuesta/"+encuesta_id+"/"+address;
+        String url = url_base + "/encuesta/" + encuesta_id + "/" + address;
 
 
         jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -343,8 +365,8 @@ public class Descargar {
 
                     }
                     dba.close();
-
-                    Toast.makeText(context, "Exito! Se almaceno de manera correcta la Encuesta.", Toast.LENGTH_SHORT).show();
+                    progressDialog.hide();
+                    Toast.makeText(context, "¡Exito: Se almaceno de manera correcta la Encuesta!", Toast.LENGTH_SHORT).show();
 
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -355,12 +377,23 @@ public class Descargar {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Error", ""+error.getMessage());
+                progressDialog.hide();
+                Toast.makeText(context, "Hubo un error en el proceso de descarga, intentalo de nuevo más tarde.", Toast.LENGTH_LONG).show();
                 dba.close();
             }
         });
 
         request.add(jsonObjectRequest);
+    }
+
+    public boolean isInternetAvailable() {
+        try {
+            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
+            return p.waitFor() == 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }
