@@ -30,7 +30,7 @@ public class Descargar {
     private SQLiteDatabase cx;
     private DatabaseAccess dba;
     private ProgressDialog progressDialog;
-    private String url_base = "http://192.168.0.15:8000/api";
+    private String url_base = "http://sigen.herokuapp.com/api";
 
     public Descargar(Context context){
         this.context = context;
@@ -55,7 +55,6 @@ public class Descargar {
 
         request = Volley.newRequestQueue(context);
         String url = url_base + "/evaluacion/turno/" + turno_id + "/obtener/" +estudiante_id;
-
 
         jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -188,11 +187,10 @@ public class Descargar {
             @Override
             public void onErrorResponse(VolleyError error) {
                 progressDialog.hide();
-                Toast.makeText(context, "Hubo un error en el proceso de descarga, intentalo de nuevo más tarde.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Hubo un error en el proceso de descarga, intentelo de nuevo más tarde.", Toast.LENGTH_LONG).show();
                 dba.close();
             }
         });
-
         request.add(jsonObjectRequest);
     }
 
@@ -378,7 +376,7 @@ public class Descargar {
             @Override
             public void onErrorResponse(VolleyError error) {
                 progressDialog.hide();
-                Toast.makeText(context, "Hubo un error en el proceso de descarga, intentalo de nuevo más tarde.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Hubo un error en el proceso de descarga, intentelo de nuevo más tarde.", Toast.LENGTH_LONG).show();
                 dba.close();
             }
         });
