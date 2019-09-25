@@ -272,7 +272,7 @@ public class Operaciones_CRUD {
                     "WHERE PDG_DCN_DOCENTE.IDUSUARIO= "+id,null);
         }
         if (rol==2){
-            cu = db.rawQuery("SELECT\n" +
+            /*cu = db.rawQuery("SELECT\n" +
                     "ESTUDIANTE.IDUSUARIO,\n" +
                     "MATERIA_CICLO.ID_CAT_MAT,\n" +
                     "CAT_MAT_MATERIA.CODIGO_MAT,\n" +
@@ -288,18 +288,19 @@ public class Operaciones_CRUD {
                     "MATERIA_CICLO.ID_MAT_CI=CARGA_ACADEMICA.ID_MAT_CI\n" +
                     "INNER JOIN CAT_MAT_MATERIA ON\n" +
                     "CAT_MAT_MATERIA.ID_CAT_MAT=MATERIA_CICLO.ID_CAT_MAT\n" +
-                    "WHERE ESTUDIANTE.IDUSUARIO="+id,null);
+                    "WHERE ESTUDIANTE.IDUSUARIO="+5,null);*/
+            cu=db.rawQuery("Select * from cat_mat_materia",null);
         }
 
         if (cu.moveToFirst()) {
             Materia m;
             do {
                 m = new Materia();
-                m.setId(cu.getInt(1));
-                m.setCodigo_materia(cu.getString(2));
-                m.setNombre(cu.getString(3));
-                m.setElectiva(cu.getInt(4));
-                m.setMaximo_preguntas(cu.getInt(5));
+                m.setId(cu.getInt(0));
+                m.setCodigo_materia(cu.getString(1));
+                m.setNombre(cu.getString(2));
+                m.setElectiva(cu.getInt(3));
+                m.setMaximo_preguntas(cu.getInt(4));
                 lista.add(m);
             }while (cu.moveToNext());
         }
