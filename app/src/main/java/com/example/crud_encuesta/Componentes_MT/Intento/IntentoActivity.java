@@ -66,7 +66,6 @@ public class IntentoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_intento);
         txtTimer = findViewById(R.id.txtTitle);
 
-
         id_turno = getIntent().getIntExtra("id_turno_intento", 0);
         id_encuesta = getIntent().getIntExtra("id_encuesta", 0);
         id_estudiante = getIntent().getIntExtra("id_estudiante", 0);
@@ -81,6 +80,10 @@ public class IntentoActivity extends AppCompatActivity {
             deleteRespuesta(id_intento);
             sumIntento=true;
         }
+
+        System.out.println("-------------------------"+id_turno);
+        System.out.println("-------------------------"+id_encuesta);
+        System.out.println("-------------------------"+id_estudiante);
 
         Button finalizar = new Button(this);
         finalizar.setText("Finalizar");
@@ -363,7 +366,7 @@ public class IntentoActivity extends AppCompatActivity {
                         RespuestaWS respuestaWS = new RespuestaWS(this, idsSp.get(i).get(sp.getSelectedItemPosition()), sp.getId(), id_intento, total_preguntas, "");
                     }
                 }
-                    i++;
+                i++;
             }
         }
 
@@ -439,13 +442,13 @@ public class IntentoActivity extends AppCompatActivity {
                     nota += preguntas.get(i).preguntaPList.get(0).ponderacion;
                 }
             }else if(preguntas.get(i).modalidad==3){
-                    for (int k=0; k<preguntasSP.get(i).size(); k++){
-                        int re = preguntas.get(i).preguntaPList.get(k).respuesta;
-                        int el = idsSp.get(i).get(preguntasSP.get(i).get(k).getSelectedItemPosition());
-                        if(re==el){
-                            nota +=preguntas.get(i).preguntaPList.get(k).ponderacion;
-                        }
+                for (int k=0; k<preguntasSP.get(i).size(); k++){
+                    int re = preguntas.get(i).preguntaPList.get(k).respuesta;
+                    int el = idsSp.get(i).get(preguntasSP.get(i).get(k).getSelectedItemPosition());
+                    if(re==el){
+                        nota +=preguntas.get(i).preguntaPList.get(k).ponderacion;
                     }
+                }
             }else if(preguntas.get(i).modalidad==4){
                 int id_respuesta = preguntas.get(i).preguntaPList.get(0).respuesta;
                 String valor_digitado = modalidadPreguntas.get(i).getRespuesta_corta().getText().toString().toLowerCase();

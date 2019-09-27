@@ -7,6 +7,7 @@ public class EncuestaWS {
     String descriion_encuesta;
     String fecha_inicio_encuesta;
     String fecha_final_encuesta;
+    Boolean local;
 
     public EncuestaWS(){
 
@@ -58,5 +59,13 @@ public class EncuestaWS {
 
     public void setDescriion_encuesta(String descriion_encuesta) {
         this.descriion_encuesta = descriion_encuesta;
+    }
+
+    public Boolean getLocal() {
+        return local;
+    }
+
+    public void setLocal(Boolean local) {
+        this.local = local;
     }
 }

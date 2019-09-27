@@ -3,6 +3,7 @@ package com.example.crud_encuesta.Componentes_MT.EncuestaWS;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,13 +27,15 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
     private LayoutInflater inflater = null;
     private Context context;
     private Descargar descargar_ws;
+    private DAOEncuestaWS daoEncuestaWS;
 
     private int pos_area;
     private List<EncuestaWS> encuestasWS= new ArrayList<>();
 
-    public EncuestaAdapterWS(Context context, List<EncuestaWS> encuestasWS){
+    public EncuestaAdapterWS(Context context, List<EncuestaWS> encuestasWS, DAOEncuestaWS daoEncuestaWS){
         this.context = context;
         this.encuestasWS = encuestasWS;
+        this.daoEncuestaWS = daoEncuestaWS;
 
         inflater = (LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 
@@ -48,11 +51,18 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
         TextView txt_titulo = mView.findViewById(R.id.txt_titulo_ws);
         ImageView informacion = mView.findViewById(R.id.img_info_ws);
         final ImageView descargar = mView.findViewById(R.id.img_download_ws);
+        final ImageView check = mView.findViewById(R.id.img_check);
 
         txt_titulo.setText(encuestasWS.get(i).getTitulo_encuesta());
 
         informacion.setTag(i);
         descargar.setTag(i);
+
+        if(encuestasWS.get(i).getLocal()){
+            descargar.setVisibility(View.GONE);
+        }else{
+            check.setVisibility(View.GONE);
+        }
 
         informacion.setOnClickListener(new View.OnClickListener(){
 
@@ -71,6 +81,15 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
                 descargar_ws = new Descargar(context);
                 descargar_ws.descargar_encuesta(id_encuesta_seleccion);
 
+                descargar.setEnabled(false);
+
+            }
+        });
+
+        check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "La encuesta ya se encuetra disponible para responder", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -79,9 +98,13 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
 
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(context, IntentoActivity.class);
-                intent.putExtra("id_encuesta",getItemId(i));
-                context.startActivity(intent);
+                if(encuestasWS.get(i).getLocal()){
+                    Intent intent=new Intent(context, IntentoActivity.class);
+                    intent.putExtra("id_encuesta",(int)getItemId(i));
+                    context.startActivity(intent);
+                }else{
+                    Toast.makeText(context, "Debe descargar la encuesta para responderla", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

@@ -39,7 +39,7 @@ public class EvaluacionesPorSubirAdapter  extends BaseAdapter implements Adapter
         View mView = inflater.inflate(R.layout.item_evas_por_subir, null);
 
         TextView txt_titulo = mView.findViewById(R.id.txt_titulo_eva);
-        ImageView cargar = mView.findViewById(R.id.img_upload);
+        ImageView cargar = mView.findViewById(R.id.img_sync);
 
         txt_titulo.setText(evaluaciones.get(i).nombre_evalacion);
         cargar.setTag(i);
