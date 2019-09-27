@@ -106,7 +106,8 @@ public class DAOUsuario {
         return logout;
     }
 
-    //provisional
+    //provisional, este metodo lo que hace es verificar que
+    //si hay un estudiante en sesion, que lo saque, antes de hacer el login
     public void provisional(){
         baseDeDatos = this.dba.open();
         Cursor cursor = baseDeDatos.rawQuery(
@@ -154,5 +155,28 @@ public class DAOUsuario {
             usuario= null;
         }
         return usuario;
+    }
+
+    public Boolean Insertar(Usuario usuario){
+        baseDeDatos = this.dba.open();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("IDUSUARIO", usuario.getIDUSUARIO() );
+        contentValues.put("ROL",usuario.getROL());
+        contentValues.put("NOMUSUARIO",usuario.getNOMUSUARIO());
+        contentValues.put("CLAVE",usuario.getCLAVE());
+
+        return (baseDeDatos.insert("USUARIO",null,contentValues)>0);
+    }
+    public Boolean DeleteUserAll(){
+        baseDeDatos = this.dba.open();
+        return (baseDeDatos.delete("USUARIO",null,null)>0);
+    }
+    public Boolean DeleteSesionAll(){
+        baseDeDatos = this.dba.open();
+        return (baseDeDatos.delete("SESIONUSUARIO",null,null)>0);
+    }
+    public Boolean DeleteMateriasUser(){
+        baseDeDatos = this.dba.open();
+        return (baseDeDatos.delete("CAT_MAT_MATERIA",null,null)>0);
     }
 }

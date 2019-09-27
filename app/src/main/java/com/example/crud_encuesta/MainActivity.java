@@ -367,6 +367,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //metodo que permite direccionar al usuario al login, si ya está logueado le dice que si en verda desea salir
+    //Nota: no se cierra la sesión
     public void controlAcceso() {
         final Usuario usuario = daoUsuario.getUsuarioLogueado();
         if (usuario == null) {
@@ -382,15 +383,15 @@ public class MainActivity extends AppCompatActivity {
             delete_emergente.setPositiveButton(getResources().getText(R.string.si), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if (daoUsuario.logoutUsuario(usuario.getIDUSUARIO())) {
-                        daoUsuario.logoutUsuario(usuario.getIDUSUARIO());
+                    //if (daoUsuario.logoutUsuario(usuario.getIDUSUARIO())) {
+                        //daoUsuario.logoutUsuario(usuario.getIDUSUARIO());
                         Toast.makeText(MainActivity.this, getResources().getText(R.string.ap_vuelve) + " " + usuario.getNOMUSUARIO(), Toast.LENGTH_LONG).show();
                         Intent i = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(i);
                         finish();
-                    } else {
-                        Toast.makeText(MainActivity.this, "Ups, algo falló, vuelve a intentar", Toast.LENGTH_LONG);
-                    }
+                    //} else {
+                    //    Toast.makeText(MainActivity.this, "Ups, algo falló, vuelve a intentar", Toast.LENGTH_LONG);
+                    //}
                 }
             });
 
