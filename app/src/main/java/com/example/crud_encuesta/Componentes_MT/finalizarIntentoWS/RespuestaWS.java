@@ -20,7 +20,7 @@ public class RespuestaWS {
     int intento_id;
     int total_preguntas;
     String texto_respuesta ="";
-    private String URLline = "http://192.168.1.3:8000/api/finalizar-intento";
+    private String URLline = "http://sigen.herokuapp.com/api/finalizar-intento";
 
     public RespuestaWS(Context context, int opcion_id, int pregunta_id, int intento_id, int total_preguntas, String texto_respuesta){
         this.context = context;

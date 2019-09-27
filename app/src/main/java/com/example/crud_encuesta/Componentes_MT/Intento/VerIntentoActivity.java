@@ -105,13 +105,20 @@ public class VerIntentoActivity extends AppCompatActivity {
     }
 
     public int getModalidad(SQLiteDatabase db, int id_pregunta){
+        int modalidad = -1;
 
-        Cursor cursor = db.rawQuery("SELECT ID_TIPO_ITEM FROM AREA WHERE ID_AREA =\n" +
-                "(SELECT ID_AREA FROM GRUPO_EMPAREJAMIENTO WHERE ID_GRUPO_EMP =\n" +
-                "(SELECT ID_GRUPO_EMP FROM PREGUNTA WHERE ID_PREGUNTA =  "+id_pregunta+"))", null);
+        try{
+            Cursor cursor = db.rawQuery("SELECT ID_TIPO_ITEM FROM AREA WHERE ID_AREA =\n" +
+                    "(SELECT ID_AREA FROM GRUPO_EMPAREJAMIENTO WHERE ID_GRUPO_EMP =\n" +
+                    "(SELECT ID_GRUPO_EMP FROM PREGUNTA WHERE ID_PREGUNTA =  "+id_pregunta+"))", null);
 
-        cursor.moveToFirst();
-        return cursor.getInt(0);
+            cursor.moveToFirst();
+            modalidad = cursor.getInt(0);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return modalidad;
     }
 
 
