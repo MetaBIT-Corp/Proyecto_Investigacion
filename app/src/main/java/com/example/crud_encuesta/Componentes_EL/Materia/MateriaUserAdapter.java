@@ -82,10 +82,10 @@ public class MateriaUserAdapter extends BaseAdapter {
         Button btneditar = view.findViewById(R.id.btn_editar);
         Button btneliminar = view.findViewById(R.id.btn_eliminar);
         Button btninfo=view.findViewById(R.id.btn_infor);
-        Button btnSync=view.findViewById(R.id.btn_sync);
+        Button btnUpload=view.findViewById(R.id.btn_upload);
         final TextView textView = view.findViewById(R.id.txt_escuela_item);
 
-        btnSync.setVisibility(View.VISIBLE);
+        btnUpload.setVisibility(View.VISIBLE);
         textView.setText(l.get(position).toString());
 
         btneditar.setVisibility(View.GONE);
@@ -133,7 +133,7 @@ public class MateriaUserAdapter extends BaseAdapter {
             }
             });
 
-        btnSync.setOnClickListener(new View.OnClickListener(){
+        btnUpload.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View view) {

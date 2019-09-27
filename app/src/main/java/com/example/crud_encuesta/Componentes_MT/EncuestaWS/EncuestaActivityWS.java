@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class EncuestaActivityWS extends AppCompatActivity implements Response.Li
     EncuestaAdapterWS encuestaAdapterWS;
     DAOEncuestaWS daoEncuestaWS;
     ListView listView;
+    ImageView sync;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,18 @@ public class EncuestaActivityWS extends AppCompatActivity implements Response.Li
             encuestaAdapterWS = new EncuestaAdapterWS(this, encuestasDescargadas, daoEncuestaWS);
             listView.setAdapter(encuestaAdapterWS);
         }
+
+        sync = findViewById(R.id.img_sync);
+        sync.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                encuestas = daoEncuestaWS.encuestasMostrar(encuestasWS);
+                encuestaAdapterWS = new EncuestaAdapterWS(EncuestaActivityWS.this, encuestas, daoEncuestaWS);
+                listView.setAdapter(encuestaAdapterWS);
+                Toast.makeText(EncuestaActivityWS.this, "Lista actualizada", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -89,20 +103,11 @@ public class EncuestaActivityWS extends AppCompatActivity implements Response.Li
             e.printStackTrace();
         }
 
-        for (EncuestaWS ews : encuestasWS){
-            Boolean agregado = false;
 
-            for (EncuestaWS elocal : encuestasDescargadas){
-                if(elocal.id == ews.id){
-                    encuestas.add(elocal);
-                    agregado = true;
-                }
-            }
-            if(!agregado) encuestas.add(ews);
-        }
+        encuestas = daoEncuestaWS.encuestasMostrar(encuestasWS);
 
         progressDialog.cancel();
-        encuestaAdapterWS = new EncuestaAdapterWS(this, encuestas, daoEncuestaWS, encuestasWS);
+        encuestaAdapterWS = new EncuestaAdapterWS(this, encuestas, daoEncuestaWS);
         listView.setAdapter(encuestaAdapterWS);
     }
 

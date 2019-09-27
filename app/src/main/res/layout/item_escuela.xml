@@ -47,11 +47,11 @@
                 android:background="@drawable/ic_delete" />
 
             <Button
-                android:id="@+id/btn_sync"
+                android:id="@+id/btn_upload"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:visibility="gone"
-                android:background="@drawable/sync_icon" />
+                android:background="@drawable/upload_icon" />
 
         </LinearLayout>
     </LinearLayout>

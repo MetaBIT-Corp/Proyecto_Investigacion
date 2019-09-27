@@ -28,7 +28,6 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
     private Context context;
     private Descargar descargar_ws;
     private DAOEncuestaWS daoEncuestaWS;
-    private List<EncuestaWS> encuestasRemoto;
 
     private int pos_area;
     private List<EncuestaWS> encuestasWS= new ArrayList<>();
@@ -37,19 +36,6 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
         this.context = context;
         this.encuestasWS = encuestasWS;
         this.daoEncuestaWS = daoEncuestaWS;
-
-        inflater = (LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-
-        if(getCount()<1){
-            Toast.makeText(context, "No hay encuestas disponibles", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public EncuestaAdapterWS(Context context, List<EncuestaWS> encuestasWS, DAOEncuestaWS daoEncuestaWS, List<EncuestaWS> encuestasRemoto){
-        this.context = context;
-        this.encuestasWS = encuestasWS;
-        this.daoEncuestaWS = daoEncuestaWS;
-        this.encuestasRemoto = encuestasRemoto;
 
         inflater = (LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 
@@ -95,8 +81,7 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
                 descargar_ws = new Descargar(context);
                 descargar_ws.descargar_encuesta(id_encuesta_seleccion);
 
-                encuestasWS = daoEncuestaWS.encuestasMostrar(encuestasRemoto);
-                notifyDataSetChanged();
+                descargar.setEnabled(false);
 
             }
         });
@@ -116,7 +101,6 @@ public class EncuestaAdapterWS extends BaseAdapter implements AdapterView.OnItem
                 if(encuestasWS.get(i).getLocal()){
                     Intent intent=new Intent(context, IntentoActivity.class);
                     intent.putExtra("id_encuesta",(int)getItemId(i));
-                    System.out.println("--------------------------antes de pasar"+getItemId(i));
                     context.startActivity(intent);
                 }else{
                     Toast.makeText(context, "Debe descargar la encuesta para responderla", Toast.LENGTH_SHORT).show();
