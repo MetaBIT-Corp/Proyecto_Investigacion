@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.example.crud_encuesta.Componentes_AP.Models.Turno;
 import com.example.crud_encuesta.Componentes_AP.Models.Usuario;
+import com.example.crud_encuesta.Componentes_MR.Estudiante.Estudiante;
 import com.example.crud_encuesta.DatabaseAccess;
 
 import java.util.ArrayList;
@@ -171,6 +172,12 @@ public class DAOUsuario {
         baseDeDatos = this.dba.open();
         return (baseDeDatos.delete("USUARIO",null,null)>0);
     }
+
+    public Boolean DeleteEstudianteAll(){
+        baseDeDatos = this.dba.open();
+        return (baseDeDatos.delete("ESTUDIANTE  ",null,null)>0);
+    }
+
     public Boolean DeleteSesionAll(){
         baseDeDatos = this.dba.open();
         return (baseDeDatos.delete("SESIONUSUARIO",null,null)>0);
@@ -178,5 +185,16 @@ public class DAOUsuario {
     public Boolean DeleteMateriasUser(){
         baseDeDatos = this.dba.open();
         return (baseDeDatos.delete("CAT_MAT_MATERIA",null,null)>0);
+    }
+
+    public boolean insertar(Estudiante estd){
+        ContentValues contenedor = new ContentValues();
+        contenedor.put("ID_EST", estd.getId());
+        contenedor.put("CARNET", estd.getCarnet());
+        contenedor.put("NOMBRE", estd.getNombre());
+        contenedor.put("ACTIVO", estd.getActivo());
+        contenedor.put("ANIO_INGRESO", estd.getAnio_ingreso());
+        contenedor.put("IDUSUARIO",estd.getId_usuario());
+        return (baseDeDatos.insert("ESTUDIANTE", null, contenedor))>0;
     }
 }

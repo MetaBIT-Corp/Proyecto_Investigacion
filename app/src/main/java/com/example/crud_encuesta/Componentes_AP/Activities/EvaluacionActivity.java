@@ -79,6 +79,7 @@ public class EvaluacionActivity extends AppCompatActivity {
             Toast.makeText(this,getResources().getText(R.string.ap_no_posee_carga),Toast.LENGTH_LONG).show();
         }
 
+
         evaluaciones = daoEvaluacion.verTodos(id_carga_academica);
         adapterEvaluacion = new AdapterEvaluacion(evaluaciones,daoEvaluacion,this,this);
 
