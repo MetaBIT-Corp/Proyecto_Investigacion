@@ -20,6 +20,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.crud_encuesta.Componentes_AP.DAO.DAOUsuario;
 import com.example.crud_encuesta.Componentes_AP.Models.Usuario;
+import com.example.crud_encuesta.Componentes_MR.Estudiante.Estudiante;
 import com.example.crud_encuesta.Componentes_MT.EncuestaWS.EncuestaActivityWS;
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.MainActivity;
@@ -111,16 +112,30 @@ public class LoginActivity extends AppCompatActivity implements Response.Listene
         daoUsuario.DeleteUserAll();
         daoUsuario.DeleteSesionAll();
         daoUsuario.DeleteMateriasUser();
+        daoUsuario.DeleteEstudianteAll();
         try{
             JSONObject jsonUser = response.getJSONObject("user");
+            JSONObject jsonEstudiante = response.getJSONObject("estudiante");
             if(jsonUser!= null){
                 Usuario user = new Usuario();
+                Estudiante estudiante = new Estudiante();
+
+
 
                 user.setIDUSUARIO(jsonUser.getInt("id"));
                 user.setCLAVE(jsonUser.getString("name"));
                 user.setNOMUSUARIO(jsonUser.getString("email"));
                 user.setROL(jsonUser.getInt("role"));
-                if(daoUsuario.Insertar(user)){
+
+                estudiante.setId(jsonEstudiante.getInt("id_est"));
+                estudiante.setActivo(jsonEstudiante.getInt("activo"));
+                estudiante.setAnio_ingreso(jsonEstudiante.getString("anio_ingreso"));
+                estudiante.setCarnet(jsonEstudiante.getString("carnet"));
+                estudiante.setId_usuario(jsonEstudiante.getInt("user_id"));
+                estudiante.setNombre(jsonEstudiante.getString("nombre"));
+
+
+                if(daoUsuario.Insertar(user)&& daoUsuario.insertar(estudiante)){
                     if(daoUsuario.loginUsuario(user.getCLAVE(),user.getNOMUSUARIO())){
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.putExtra("id_user",user.getIDUSUARIO());
