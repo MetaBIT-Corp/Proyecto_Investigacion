@@ -76,7 +76,7 @@ public class EncuestaActivityWS extends AppCompatActivity implements Response.Li
     @Override
     public void onErrorResponse(VolleyError error) {
         progressDialog.cancel();
-        Toast.makeText(this, "Hubo un error al intentar recuperar los datos. Prueba tu conexión a internet", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Prueba tu conexión a internet e intentalo nuevament", Toast.LENGTH_SHORT).show();
     }
 
     @Override

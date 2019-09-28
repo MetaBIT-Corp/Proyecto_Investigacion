@@ -23,10 +23,14 @@ public class EvaluacionesPorSubirAdapter  extends BaseAdapter implements Adapter
     private LayoutInflater inflater = null;
     private Context context;
     private List<EvaluacionesPorSubir> evaluaciones = new ArrayList<>();
+    private DAOEvasPorSibir daoEvasPorSibir;
+    private int materia_id;
 
-    public EvaluacionesPorSubirAdapter(Context context, List<EvaluacionesPorSubir> evaluaciones){
+    public EvaluacionesPorSubirAdapter(Context context, List<EvaluacionesPorSubir> evaluaciones, DAOEvasPorSibir daoEvasPorSibir, int materia_id){
         this.context = context;
         this.evaluaciones = evaluaciones;
+        this.daoEvasPorSibir = daoEvasPorSibir;
+        this.materia_id = materia_id;
 
         inflater = (LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 
@@ -52,6 +56,9 @@ public class EvaluacionesPorSubirAdapter  extends BaseAdapter implements Adapter
             public void onClick(View view) {
                 if(accesoInternet()){
                     subirEvaluacion(intento_id);
+                    evaluaciones = daoEvasPorSibir.getEvaluacionesPorSubir(materia_id);
+                    notifyDataSetChanged();
+
                 }else{
                     Toast.makeText(context, "Error, no hay conexión a intenrnet ", Toast.LENGTH_SHORT).show();
                 }
