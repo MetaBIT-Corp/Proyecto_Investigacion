@@ -24,8 +24,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.crud_encuesta.Componentes_AP.Adapters.AdapterEvaluacion;
 import com.example.crud_encuesta.Componentes_AP.DAO.DAOEvaluacion;
+import com.example.crud_encuesta.Componentes_AP.DAO.DAOTurno;
 import com.example.crud_encuesta.Componentes_AP.DAO.DAOUsuario;
 import com.example.crud_encuesta.Componentes_AP.Models.Evaluacion;
 import com.example.crud_encuesta.Componentes_AP.Models.Turno;
@@ -33,10 +40,15 @@ import com.example.crud_encuesta.Componentes_AP.Models.Usuario;
 import com.example.crud_encuesta.Componentes_MT.Intento.IntentoActivity;
 import com.example.crud_encuesta.R;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class EvaluacionActivity extends AppCompatActivity {
+public class EvaluacionActivity extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener {
+    RequestQueue requestQueue;
+    JsonObjectRequest jsonObjectRequest;
+    DAOTurno daoTurno;
 
     DAOEvaluacion daoEvaluacion;
     DAOUsuario daoUsuario;
@@ -62,7 +74,8 @@ public class EvaluacionActivity extends AppCompatActivity {
             id_materia = bundle.getInt("id_materia");
         }
 
-
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
+        daoTurno = new DAOTurno(this);
         daoUsuario = new DAOUsuario(this);
         daoEvaluacion = new DAOEvaluacion(this);
 
@@ -79,7 +92,21 @@ public class EvaluacionActivity extends AppCompatActivity {
             Toast.makeText(this,getResources().getText(R.string.ap_no_posee_carga),Toast.LENGTH_LONG).show();
         }
 
+        /*
+        *
+        * LOGICA DE WEBSERVICES
+        *
+        * */
+        //Si hay internet se va a realizar la consulta al ws
+        if(isInternetAvailable()){
+            obtenerEvalucionesTurnos(id_carga_academica);
+        }
 
+        /*
+         *
+         * LOGICA DE WEBSERVICES
+         *
+         * */
         evaluaciones = daoEvaluacion.verTodos(id_carga_academica);
         adapterEvaluacion = new AdapterEvaluacion(evaluaciones,daoEvaluacion,this,this);
 
@@ -239,5 +266,35 @@ public class EvaluacionActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 autocomplemento);
         edt_buscar.setAdapter(adapterComplemento);
+    }
+
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        Toast.makeText(this, "Error: " + error,Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onResponse(JSONObject response) {
+        Toast.makeText(this, "Response " ,Toast.LENGTH_LONG).show();
+    }
+
+    public boolean isInternetAvailable() {
+        try {
+            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
+            return p.waitFor() == 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public void obtenerEvalucionesTurnos(int id_carga_academica) {
+        String url = "http://sigen.herokuapp.com/api/evaluaciones_m/turnos_m/"+id_carga_academica;
+        jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                this,
+                this);
+        requestQueue.add(jsonObjectRequest);
     }
 }
