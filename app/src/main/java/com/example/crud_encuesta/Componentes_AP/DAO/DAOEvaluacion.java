@@ -52,6 +52,11 @@ public class DAOEvaluacion {
         return (baseDeDatos.delete("EVALUACION","ID_EVALUACION="+id,null)>0);
     }
 
+    public Boolean EliminarSegunCarga(Integer id_carga_academica){
+        baseDeDatos = this.dba.open();
+        return (baseDeDatos.delete("EVALUACION","ID_CARG_ACA="+id_carga_academica,null)>0);
+    }
+
     public Boolean Editar(Evaluacion evaluacion){
         baseDeDatos = this.dba.open();
         ContentValues contentValues = new ContentValues();

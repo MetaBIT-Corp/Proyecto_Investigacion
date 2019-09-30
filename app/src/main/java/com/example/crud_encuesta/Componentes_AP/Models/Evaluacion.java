@@ -9,6 +9,9 @@ public class Evaluacion {
     String nombre;
     String descripcion;
 
+    public Evaluacion() {
+    }
+
     //constructor con id
     public Evaluacion(int id, int idCargaAcad, int duracion, int cantIntento,
                       String nombre, String descripcion) {

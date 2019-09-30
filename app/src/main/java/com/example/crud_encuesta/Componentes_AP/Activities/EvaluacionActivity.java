@@ -37,9 +37,12 @@ import com.example.crud_encuesta.Componentes_AP.DAO.DAOUsuario;
 import com.example.crud_encuesta.Componentes_AP.Models.Evaluacion;
 import com.example.crud_encuesta.Componentes_AP.Models.Turno;
 import com.example.crud_encuesta.Componentes_AP.Models.Usuario;
+import com.example.crud_encuesta.Componentes_MR.Estudiante.Estudiante;
 import com.example.crud_encuesta.Componentes_MT.Intento.IntentoActivity;
+import com.example.crud_encuesta.MainActivity;
 import com.example.crud_encuesta.R;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -276,6 +279,48 @@ public class EvaluacionActivity extends AppCompatActivity implements Response.Li
     @Override
     public void onResponse(JSONObject response) {
         Toast.makeText(this, "Response " ,Toast.LENGTH_LONG).show();
+
+        try{
+            JSONArray jsonEvaluaciones = response.getJSONArray("evaluaciones");
+            JSONArray jsonTurnos = response.getJSONArray("turnos");
+            if(jsonEvaluaciones!= null && jsonTurnos != null){
+            //elimina las evaluaciones y por medio de triggers se eliminan los turnos vinculados
+            daoEvaluacion.EliminarSegunCarga(id_carga_academica);
+            for (int i = 0; i < jsonEvaluaciones.length(); i++) {
+
+                JSONObject evaluacion = jsonEvaluaciones.getJSONObject(i);
+                Evaluacion newEvaluacion = new Evaluacion();
+                newEvaluacion.setId(evaluacion.getInt("id"));
+                newEvaluacion.setCantIntento(evaluacion.getInt("intentos"));
+                newEvaluacion.setDescripcion(evaluacion.getString("descripcion_evaluacion"));
+                newEvaluacion.setDuracion(evaluacion.getInt("duracion"));
+                newEvaluacion.setNombre(evaluacion.getString("nombre_evaluacion"));
+                newEvaluacion.setIdCargaAcad(evaluacion.getInt("id_carga"));
+
+                daoEvaluacion.Insertar(newEvaluacion);
+            }
+
+            for (int j = 0; j < jsonTurnos.length(); j++) {
+
+                JSONObject turno= jsonTurnos.getJSONObject(j);
+                Turno newTurno = new Turno();
+                newTurno.setId(turno.getInt("id"));
+                newTurno.setContrasenia(turno.getString("contraseña"));
+                newTurno.setIdEvaluacion(turno.getInt("evaluacion_id"));
+                newTurno.setDateInicial(turno.getString("fecha_inicio_turno"));
+                newTurno.setDateFinal(turno.getString("fecha_final_turno"));
+
+                daoTurno.Insertar(newTurno);
+            }
+
+            }else{
+                Toast.makeText(this, "NO hay evaluaciones disponibles",Toast.LENGTH_LONG).show();
+            }
+
+        }catch(Exception e){
+            Toast.makeText(this, "Error: por favor vuelve a ingresar",Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 
     public boolean isInternetAvailable() {

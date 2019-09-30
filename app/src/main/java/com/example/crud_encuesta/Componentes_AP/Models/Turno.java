@@ -9,6 +9,9 @@ public class Turno {
     int visible;
     String contrasenia;
 
+    public Turno() {
+    }
+
     //constructor con id: este constructor nos servirá en el momento de editar un registro
     public Turno(int id, int idEvaluacion, String dateInicial,
                  String dateFinal, int visible, String contrasenia) {
