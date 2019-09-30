@@ -108,14 +108,20 @@ public class IntentoConsultasDB {
         return cursor.getInt(0);
     }
 
-    public static int id_ultimo_intento(int id_usuario, SQLiteDatabase db) {
+    public static int id_ultimo_intento(int id_usuario, int id_encuestado, SQLiteDatabase db) {
         int id_numero_intento = 0;
 
-        Cursor cursor = db.rawQuery("SELECT ID_INTENTO FROM INTENTO WHERE ID_EST="+id_usuario+" ORDER BY ID_INTENTO DESC LIMIT 1", null);
-        cursor.moveToFirst();
+        try{
+            Cursor cursor = db.rawQuery("SELECT ID_INTENTO FROM INTENTO WHERE ID_EST="+id_usuario+
+                    " OR ID_ENCUESTADO ="+id_encuestado+" ORDER BY ID_INTENTO DESC LIMIT 1", null);
 
-        if (cursor.getCount() > 0) {
-            id_numero_intento = cursor.getInt(0);
+            cursor.moveToFirst();
+
+            if (cursor.getCount() > 0) {
+                id_numero_intento = cursor.getInt(0);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
         return id_numero_intento;

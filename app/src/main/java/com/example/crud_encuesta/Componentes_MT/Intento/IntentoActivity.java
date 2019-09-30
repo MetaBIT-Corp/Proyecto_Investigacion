@@ -47,6 +47,8 @@ public class IntentoActivity extends AppCompatActivity {
     private int id_turno;
     private int id_encuesta;
     private int id_estudiante;
+    private int id_encuestado;
+    private int es_encuesta;
     int indice =0;
     boolean acceso_internet;
     List<Pregunta> preguntas = new ArrayList<>();
@@ -69,21 +71,18 @@ public class IntentoActivity extends AppCompatActivity {
         id_turno = getIntent().getIntExtra("id_turno_intento", 0);
         id_encuesta = getIntent().getIntExtra("id_encuesta", 0);
         id_estudiante = getIntent().getIntExtra("id_estudiante", 0);
+        id_encuestado = id_encuestado();
         ll_principal = findViewById(R.id.llPrincipal);
 
         preguntas= getPreguntas();
 
-        id_intento = id_intento(id_estudiante);
-        if(primerIntento(id_estudiante, id_turno)){
+        id_intento = id_intento(id_estudiante, id_encuestado);
+        if(primerIntento(id_estudiante, id_turno) && id_encuesta==0){
             iniciar_intento();
         }else{
             deleteRespuesta(id_intento);
             sumIntento=true;
         }
-
-        System.out.println("-------------------------"+id_turno);
-        System.out.println("-------------------------"+id_encuesta);
-        System.out.println("-------------------------"+id_estudiante);
 
         Button finalizar = new Button(this);
         finalizar.setText("Finalizar");
@@ -100,8 +99,10 @@ public class IntentoActivity extends AppCompatActivity {
         //Titulo de IntentoActivity
         if(id_encuesta!=0){
             txtTimer.setText(getFechaEncuesta(id_encuesta));
+            es_encuesta = 1;
         }else{
             cuentaRegresiva(getDuracionTurno(id_turno));
+            es_encuesta = 0;
         }
 
         //final PreguntaView preguntaView = new PreguntaView(this);
@@ -259,11 +260,11 @@ public class IntentoActivity extends AppCompatActivity {
         return convertido;
     }
 
-    public int id_intento(int id_est){
+    public int id_intento(int id_est, int id_enc){
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         SQLiteDatabase db = databaseAccess.open();
 
-        return IntentoConsultasDB.id_ultimo_intento(id_est, db);
+        return IntentoConsultasDB.id_ultimo_intento(id_est, id_enc, db);
     }
 
     public String rc_getOpcion(int id){
@@ -283,8 +284,8 @@ public class IntentoActivity extends AppCompatActivity {
         try{
             ContentValues registro = new ContentValues();
             registro.put("id_est", id_estudiante);
-            registro.put("id_clave", id_clave);
-            registro.put("id_encuestado", id_encuesta);
+            if(id_estudiante!=0) registro.put("id_clave", id_clave);
+            if(id_encuesta!=0) registro.put("id_encuestado", id_encuestado);
             registro.put("fecha_inicio_intento", fecha_actual());
             registro.put("numero_intento", IntentoConsultasDB.ultimo_intento(id_estudiante , db)+1);
 
@@ -323,7 +324,7 @@ public class IntentoActivity extends AppCompatActivity {
                 db.insert("respuesta", null, registro);
 
                 if(acceso_internet){
-                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "");
+                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "", es_encuesta);
                 }
             }
         }
@@ -345,7 +346,7 @@ public class IntentoActivity extends AppCompatActivity {
                 db.insert("respuesta", null, registro);
 
                 if(acceso_internet) {
-                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "");
+                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "", es_encuesta);
                 }
             }
         }
@@ -363,7 +364,7 @@ public class IntentoActivity extends AppCompatActivity {
                     db.insert("respuesta", null, registro);
 
                     if(acceso_internet){
-                        RespuestaWS respuestaWS = new RespuestaWS(this, idsSp.get(i).get(sp.getSelectedItemPosition()), sp.getId(), id_intento, total_preguntas, "");
+                        RespuestaWS respuestaWS = new RespuestaWS(this, idsSp.get(i).get(sp.getSelectedItemPosition()), sp.getId(), id_intento, total_preguntas, "", es_encuesta);
                     }
                 }
                 i++;
@@ -381,7 +382,7 @@ public class IntentoActivity extends AppCompatActivity {
                 db.insert("respuesta", null, registro);
 
                 if(acceso_internet){
-                    RespuestaWS respuestaWS = new RespuestaWS(this, et.getId(), idPreguntaRC.get(i), id_intento, total_preguntas, et.getText().toString());
+                    RespuestaWS respuestaWS = new RespuestaWS(this, et.getId(), idPreguntaRC.get(i), id_intento, total_preguntas, et.getText().toString(), es_encuesta);
                 }
                 i++;
             }
@@ -605,6 +606,7 @@ public class IntentoActivity extends AppCompatActivity {
                             Intent i = new Intent(IntentoActivity.this, VerIntentoActivity.class);
                             i.putExtra("id_estudiante", id_estudiante);
                             i.putExtra("id_encuesta", id_encuesta);
+                            i.putExtra("id_encuestado", id_encuestado);
                             startActivity(i);
                             finish();
                         }
@@ -652,6 +654,23 @@ public class IntentoActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public int id_encuestado(){
+        DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
+        SQLiteDatabase db = databaseAccess.open();
+        int id_encuestado=0;
+
+        try{
+            Cursor cursor = db.rawQuery("SELECT ID_ENCUESTADO FROM ENCUESTADO ORDER BY ID_ENCUESTADO DESC LIMIT 1", null);
+            if(cursor.moveToFirst()){
+                id_encuestado = cursor.getInt(0);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return id_encuestado;
     }
 
 

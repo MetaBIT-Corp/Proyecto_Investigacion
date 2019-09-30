@@ -20,6 +20,7 @@ public class VerIntentoActivity extends AppCompatActivity {
     TextView txtTitle;
     int id_usuario;
     int id_encuesta;
+    int id_encuestado;
     List<Integer> idSP = new ArrayList<>();
     List<String> opcionSP = new ArrayList<>();
     double nota;
@@ -35,6 +36,7 @@ public class VerIntentoActivity extends AppCompatActivity {
         id_usuario = getIntent().getIntExtra("id_estudiante", 0);
         nota = getIntent().getDoubleExtra("nota", 0);
         id_encuesta = getIntent().getIntExtra("id_encuesta", 0);
+        id_encuestado = getIntent().getIntExtra("id_encuestado", 0);
 
         if(id_encuesta==0) txtTitle.setText("Nota: "+nota);
         listView.setAdapter(new VerIntentoAdapter(getPreguntas(), id_encuesta, idSP, opcionSP, this, this));
@@ -57,7 +59,7 @@ public class VerIntentoActivity extends AppCompatActivity {
         DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
         SQLiteDatabase db = databaseAccess.open();
 
-        ultimo_intento = IntentoConsultasDB.id_ultimo_intento(id_usuario, db);
+        ultimo_intento = IntentoConsultasDB.id_ultimo_intento(id_usuario, id_encuestado, db);
 
         String sentencia_pregunta = "SELECT * FROM PREGUNTA WHERE ID_PREGUNTA =";
 
