@@ -121,7 +121,7 @@ public class AdapterTurno extends BaseAdapter {
         String fechafinal = turno.getDateFinal();
         String[] pfechafinal = fechafinal.split(" ");
 
-        tv_item.setText("Id: " + turno.getId() + " " + pfechainicial[0] + " - " + pfechafinal[0]);
+        tv_item.setText("Turno " + (position + 1));
 
 
         //ocultados de acuerdo a rol

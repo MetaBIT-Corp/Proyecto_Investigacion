@@ -46,6 +46,18 @@ public class DAOTurno {
 
         return (baseDeDatos.insert("TURNO",null,contentValues)>0);
     }
+    public Boolean InsertarWS(Turno turno){
+        baseDeDatos = this.dba.open();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("ID_TURNO", turno.getId());
+        contentValues.put("ID_EVALUACION", turno.getIdEvaluacion());
+        contentValues.put("FECHA_INICIO_TURNO",turno.getDateInicial());
+        contentValues.put("FECHA_FINAL_TURNO",turno.getDateFinal());
+        contentValues.put("VISIBILIDAD",turno.getVisible());
+        contentValues.put("CONTRASENIA",turno.getContrasenia());
+
+        return (baseDeDatos.insert("TURNO",null,contentValues)>0);
+    }
 
     public Boolean Eliminar(Integer id){
         baseDeDatos = this.dba.open();

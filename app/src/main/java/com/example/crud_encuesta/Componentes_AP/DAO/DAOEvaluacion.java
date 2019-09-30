@@ -47,6 +47,19 @@ public class DAOEvaluacion {
         return (baseDeDatos.insert("EVALUACION",null,contentValues)>0);
     }
 
+    public Boolean InsertarWS(Evaluacion evaluacion){
+        baseDeDatos = this.dba.open();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("ID_EVALUACION", evaluacion.getId() );
+        contentValues.put("ID_CARG_ACA", evaluacion.getIdCargaAcad() );
+        contentValues.put("DURACION",evaluacion.getDuracion());
+        contentValues.put("INTENTO",evaluacion.getCantIntento());
+        contentValues.put("NOMBRE_EVALUACION",evaluacion.getNombre());
+        contentValues.put("DESCRIPCION_EVALUACION",evaluacion.getDescripcion());
+
+        return (baseDeDatos.insert("EVALUACION",null,contentValues)>0);
+    }
+
     public Boolean Eliminar(Integer id){
         baseDeDatos = this.dba.open();
         return (baseDeDatos.delete("EVALUACION","ID_EVALUACION="+id,null)>0);

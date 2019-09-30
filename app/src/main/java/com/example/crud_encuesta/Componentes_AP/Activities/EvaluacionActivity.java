@@ -278,8 +278,6 @@ public class EvaluacionActivity extends AppCompatActivity implements Response.Li
 
     @Override
     public void onResponse(JSONObject response) {
-        Toast.makeText(this, "Response " ,Toast.LENGTH_LONG).show();
-
         try{
             JSONArray jsonEvaluaciones = response.getJSONArray("evaluaciones");
             JSONArray jsonTurnos = response.getJSONArray("turnos");
@@ -297,7 +295,7 @@ public class EvaluacionActivity extends AppCompatActivity implements Response.Li
                 newEvaluacion.setNombre(evaluacion.getString("nombre_evaluacion"));
                 newEvaluacion.setIdCargaAcad(evaluacion.getInt("id_carga"));
 
-                daoEvaluacion.Insertar(newEvaluacion);
+                daoEvaluacion.InsertarWS(newEvaluacion);
             }
 
             for (int j = 0; j < jsonTurnos.length(); j++) {
@@ -307,10 +305,10 @@ public class EvaluacionActivity extends AppCompatActivity implements Response.Li
                 newTurno.setId(turno.getInt("id"));
                 newTurno.setContrasenia(turno.getString("contraseña"));
                 newTurno.setIdEvaluacion(turno.getInt("evaluacion_id"));
-                newTurno.setDateInicial(turno.getString("fecha_inicio_turno"));
-                newTurno.setDateFinal(turno.getString("fecha_final_turno"));
+                newTurno.setDateInicial(turno.getString("fecha_inicio_turno").replace("-","/"));
+                newTurno.setDateFinal(turno.getString("fecha_final_turno").replace("-","/"));
 
-                daoTurno.Insertar(newTurno);
+                daoTurno.InsertarWS(newTurno);
             }
 
             }else{

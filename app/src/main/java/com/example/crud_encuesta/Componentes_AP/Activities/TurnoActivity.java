@@ -110,7 +110,7 @@ public class TurnoActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (!pass_turno.getText().toString().isEmpty()) {
-                                if (pass_turno.getText().toString().equals(turno.getContrasenia())) {
+                                if ( pass_turno.getText().toString().equals(turno.getContrasenia())) {
                                     Intent intent = new Intent(view.getContext(), IntentoActivity.class);
                                     intent.putExtra("id_turno_intento", id_turno_intento);
                                     intent.putExtra("id_estudiante",id_estudiante);
