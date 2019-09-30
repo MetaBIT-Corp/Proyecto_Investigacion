@@ -112,7 +112,7 @@ public class EvaluacionesPorSubirAdapter  extends BaseAdapter implements Adapter
                 txt_respuesta = cursor_respuesta.getString(4);
 
                 if(txt_respuesta==null)txt_respuesta="";
-                RespuestaWS respuestaWS = new RespuestaWS(context, id_opcion, id_pregunta, intento_id, total, txt_respuesta);
+                RespuestaWS respuestaWS = new RespuestaWS(context, id_opcion, id_pregunta, intento_id, total, txt_respuesta, 0);
             }
             Toast.makeText(context, "La evaluación fue subida con éxito", Toast.LENGTH_SHORT).show();
             contenedor.put("SUBIDO",1);

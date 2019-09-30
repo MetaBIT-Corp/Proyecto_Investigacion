@@ -20,15 +20,17 @@ public class RespuestaWS {
     int intento_id;
     int total_preguntas;
     String texto_respuesta ="";
+    int es_encuesta;
     private String URLline = "http://sigen.herokuapp.com/api/finalizar-intento";
 
-    public RespuestaWS(Context context, int opcion_id, int pregunta_id, int intento_id, int total_preguntas, String texto_respuesta){
+    public RespuestaWS(Context context, int opcion_id, int pregunta_id, int intento_id, int total_preguntas, String texto_respuesta, int es_encuesta){
         this.context = context;
         this.opcion_id = opcion_id;
         this.pregunta_id = pregunta_id;
         this.intento_id = intento_id;
         this.total_preguntas = total_preguntas;
         this.texto_respuesta = texto_respuesta;
+        this.es_encuesta = es_encuesta;
 
         respuesta();
     }
@@ -58,6 +60,7 @@ public class RespuestaWS {
                 params.put("intento_id", String.valueOf(intento_id));
                 params.put("texto_respuesta",texto_respuesta);
                 params.put("total_preguntas", String.valueOf(total_preguntas));
+                params.put("es_encuesta", String.valueOf(es_encuesta));
 
                 return params;
             }
