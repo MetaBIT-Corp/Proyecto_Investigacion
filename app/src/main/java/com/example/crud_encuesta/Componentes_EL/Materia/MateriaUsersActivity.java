@@ -76,8 +76,7 @@ public class MateriaUsersActivity extends AppCompatActivity implements Response.
             progressDialog.cancel();
         }else{
             //Llamada al WS
-            //Ahorita se ha dejado 7 porque ese es el id del usuario jose
-            getMateriasWS(7);
+            getMateriasWS(id);
         }
     }
 

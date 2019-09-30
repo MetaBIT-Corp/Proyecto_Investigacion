@@ -117,5 +117,16 @@ public class DAOTurno {
         return turnos;
     }
 
+    public int getIdEstudiante(){
+        baseDeDatos = this.dba.open();
+        int idEstudiante= 0;
+        Cursor cursor  = baseDeDatos.rawQuery("Select ID_EST FROM ESTUDIANTE ",
+                null);
+        if(cursor.moveToFirst()){
+            idEstudiante=cursor.getInt(0);
+        }
+        return idEstudiante;
+    }
+
 
 }

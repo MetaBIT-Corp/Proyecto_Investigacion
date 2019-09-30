@@ -145,8 +145,8 @@ public class AdapterTurno extends BaseAdapter {
             public void onClick(View v) {
 
                 descargar_ws = new Descargar(context);
-                int turno_id = 1;
-                int estudiante_id = 1;
+                int turno_id = turno.getId();
+                int estudiante_id = daoTurno.getIdEstudiante();
                 //Pasar params reales
                 descargar_ws.descargar_turno(turno_id, estudiante_id);
 
