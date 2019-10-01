@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.crud_encuesta.Componentes_MT.Intento.IntentoConsultasDB;
 import com.example.crud_encuesta.DatabaseAccess;
 import com.example.crud_encuesta.R;
 
@@ -100,6 +101,7 @@ public class EvaluacionesPorSubirAdapter  extends BaseAdapter implements Adapter
         int id_opcion;
         int id_pregunta;
         int total;
+        int es_rc;
         String txt_respuesta;
 
         try{
@@ -107,12 +109,17 @@ public class EvaluacionesPorSubirAdapter  extends BaseAdapter implements Adapter
             total = cursor_respuesta.getCount();
 
             while(cursor_respuesta.moveToNext()){
+                es_rc = 0;
                 id_opcion = cursor_respuesta.getInt(1);
                 id_pregunta = cursor_respuesta.getInt(3);
                 txt_respuesta = cursor_respuesta.getString(4);
 
+                if(txt_respuesta != null){
+                    es_rc = 1;
+                }
+
                 if(txt_respuesta==null)txt_respuesta="";
-                RespuestaWS respuestaWS = new RespuestaWS(context, id_opcion, id_pregunta, intento_id, total, txt_respuesta, 0);
+                RespuestaWS respuestaWS = new RespuestaWS(context, id_opcion, id_pregunta, intento_id, total, txt_respuesta, 0, es_rc);
             }
             Toast.makeText(context, "La evaluación fue subida con éxito", Toast.LENGTH_SHORT).show();
             contenedor.put("SUBIDO",1);

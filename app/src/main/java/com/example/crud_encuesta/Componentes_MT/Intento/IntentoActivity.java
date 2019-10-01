@@ -324,7 +324,7 @@ public class IntentoActivity extends AppCompatActivity {
                 db.insert("respuesta", null, registro);
 
                 if(acceso_internet){
-                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "", es_encuesta);
+                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "", es_encuesta, 0);
                 }
             }
         }
@@ -346,7 +346,7 @@ public class IntentoActivity extends AppCompatActivity {
                 db.insert("respuesta", null, registro);
 
                 if(acceso_internet) {
-                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "", es_encuesta);
+                    RespuestaWS respuestaWS = new RespuestaWS(this, id_seleccion, rg.getId(), id_intento, total_preguntas, "", es_encuesta, 0);
                 }
             }
         }
@@ -364,7 +364,7 @@ public class IntentoActivity extends AppCompatActivity {
                     db.insert("respuesta", null, registro);
 
                     if(acceso_internet){
-                        RespuestaWS respuestaWS = new RespuestaWS(this, idsSp.get(i).get(sp.getSelectedItemPosition()), sp.getId(), id_intento, total_preguntas, "", es_encuesta);
+                        RespuestaWS respuestaWS = new RespuestaWS(this, idsSp.get(i).get(sp.getSelectedItemPosition()), sp.getId(), id_intento, total_preguntas, "", es_encuesta, 0);
                     }
                 }
                 i++;
@@ -382,7 +382,7 @@ public class IntentoActivity extends AppCompatActivity {
                 db.insert("respuesta", null, registro);
 
                 if(acceso_internet){
-                    RespuestaWS respuestaWS = new RespuestaWS(this, et.getId(), idPreguntaRC.get(i), id_intento, total_preguntas, et.getText().toString(), es_encuesta);
+                    RespuestaWS respuestaWS = new RespuestaWS(this, et.getId(), idPreguntaRC.get(i), id_intento, total_preguntas, et.getText().toString(), es_encuesta, 1);
                 }
                 i++;
             }
@@ -408,18 +408,6 @@ public class IntentoActivity extends AppCompatActivity {
         }else{
             reg.put("subido", 0);
             Toast.makeText(this, "No tienes conexión a internet para subir la evaluación, intenta nuevamente cuanto tengas conexión a internet", Toast.LENGTH_LONG).show();
-            /*AlertDialog.Builder mensaje = new AlertDialog.Builder(IntentoActivity.this);
-            mensaje.setTitle("Advertencia");
-            //mensaje.setIcon(R.drawable.warning);
-            mensaje.setMessage("No tienes conexión a internet para subir la evaluación, intenta nuevamente cuanto tengas conexión a internet");
-            mensaje.setPositiveButton("Aceptar", new DialogInterface.OnClickListener(){
-
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                }
-            });
-            mensaje.show();*/
         }
 
         db.update("intento", reg, "id_intento=" + id_intento, null);
