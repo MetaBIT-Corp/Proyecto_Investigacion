@@ -3,6 +3,7 @@ package com.example.crud_encuesta.Componentes_AP.Activities;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,6 +53,7 @@ public class EvaluacionActivity extends AppCompatActivity implements Response.Li
     RequestQueue requestQueue;
     JsonObjectRequest jsonObjectRequest;
     DAOTurno daoTurno;
+    ProgressDialog progressDialog;
 
     DAOEvaluacion daoEvaluacion;
     DAOUsuario daoUsuario;
@@ -102,6 +104,7 @@ public class EvaluacionActivity extends AppCompatActivity implements Response.Li
         * */
         //Si hay internet se va a realizar la consulta al ws
         if(isInternetAvailable()){
+            progress("Cargando...");
             obtenerEvalucionesTurnos(id_carga_academica);
         }
 
@@ -310,6 +313,11 @@ public class EvaluacionActivity extends AppCompatActivity implements Response.Li
 
                 daoTurno.InsertarWS(newTurno);
             }
+                //refrescamos la lista
+                evaluaciones = daoEvaluacion.verTodos(id_carga_academica);
+                //ejecutamos el metodo
+                adapterEvaluacion.notifyDataSetChanged();
+                progressDialog.cancel();
 
             }else{
                 Toast.makeText(this, "NO hay evaluaciones disponibles",Toast.LENGTH_LONG).show();
@@ -339,5 +347,11 @@ public class EvaluacionActivity extends AppCompatActivity implements Response.Li
                 this,
                 this);
         requestQueue.add(jsonObjectRequest);
+    }
+
+    public void progress(String mensaje){
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(mensaje);
+        progressDialog.show();
     }
 }
